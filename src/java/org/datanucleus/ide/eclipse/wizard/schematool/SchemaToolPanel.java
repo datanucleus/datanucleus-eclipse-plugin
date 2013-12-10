@@ -259,6 +259,15 @@ public class SchemaToolPanel extends Composite
                 }
                 finally
                 {
+                    try
+                    {
+                        loader.close();
+                    }
+                    catch (IOException e1)
+                    {
+                        // TODO Auto-generated catch block
+                        e1.printStackTrace();
+                    }
                 }
             }
         });
