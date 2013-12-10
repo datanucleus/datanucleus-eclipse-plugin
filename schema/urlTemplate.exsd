@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.datanucleus.ide.eclipse">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="org.datanucleus.ide.eclipse" id="urlTemplate" name="URL Template"/>
+      </appInfo>
+      <documentation>
+         To connect to a database server we need a url that is understandable by a driver
+
+URLs are difficult to write and this this extension point will provide templates to the user associated to a driver class name.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <complexType>
+         <sequence>
+            <element ref="url-template" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appInfo>
+                  <meta.attribute translatable="true"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="url-template">
+      <complexType>
+         <attribute name="driver-class-name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  the full qualified class name implementing java.sql.Driver
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="java.sql.Driver"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+         <attribute name="url-template" type="string" use="required">
+            <annotation>
+               <documentation>
+                  the url template
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         1.1.0-beta3
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         Copyright (c) 2006 Erik Bengtson and others. All rights reserved. 
+      </documentation>
+   </annotation>
+
+</schema>

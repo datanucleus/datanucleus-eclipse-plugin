@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+    <extension-point id="urlTemplate" name="URL Template" schema="schema/urlTemplate.exsd"/>
+
+    <extension id="projectnature" name="DataNucleus Project Nature" point="org.eclipse.core.resources.natures">
+        <runtime>
+            <run class="org.datanucleus.ide.eclipse.project.ProjectNature"/>
+        </runtime>
+        <requires-nature id="org.eclipse.jdt.core.javanature"/>
+        <builder id="org.datanucleus.ide.eclipse.enhancerbuilder"/>
+    </extension>
+
+    <extension id="enhancerbuilder" name="DataNucleus Enhancer" point="org.eclipse.core.resources.builders">
+        <builder hasNature="true">
+            <run class="org.datanucleus.ide.eclipse.jobs.AutoEnhancer"/>
+        </builder>
+    </extension>
+
+    <extension point="org.eclipse.core.runtime.preferences">
+        <initializer class="org.datanucleus.ide.eclipse.preferences.PreferenceInitializer"/>
+    </extension>
+
+    <extension point="org.eclipse.ui.console.consolePatternMatchListeners">
+        <!-- Match enhancer output for classes to give link to class -->
+        <!--consolePatternMatchListener class="org.datanucleus.ide.eclipse.console.EnhancedPatternMatcher"
+            id="matchenhancer" qualifier=".*" regex="(ENHANCED|NOT ENHANCED|UNKNOWN|NOT ENHANCED).*">
+            <enablement/>
+        </consolePatternMatchListener-->
+
+        <!-- Match enhancer/SchemaTool output for directories to give link to directory -->
+        <consolePatternMatchListener class="org.datanucleus.ide.eclipse.console.ClasspathEntryPatternMatcher"
+            id="matchenhancer1" qualifier=".*" regex="&gt;&gt;.*">
+            <enablement/>
+        </consolePatternMatchListener>
+    </extension>
+
+    <extension id="org.datanucleus.ide.eclipse.preferences" point="org.eclipse.ui.preferencePages">
+        <page class="org.datanucleus.ide.eclipse.preferences.GeneralPreferencePage"
+            id="org.datanucleus.ide.eclipse.preferences.general" name="%preferencesGeneral"/>
+        <page class="org.datanucleus.ide.eclipse.preferences.EnhancerPreferencePage" 
+            category="org.datanucleus.ide.eclipse.preferences.general"
+            id="org.datanucleus.ide.eclipse.preferences.enhancer" name="Enhancer"/>
+        <page class="org.datanucleus.ide.eclipse.preferences.SchemaToolPreferencePage"
+            category="org.datanucleus.ide.eclipse.preferences.general"
+            id="org.datanucleus.ide.eclipse.preferences.schematool" name="SchemaTool"/>
+    </extension>
+
+    <extension id="org.datanucleus.ide.eclipse.properties" point="org.eclipse.ui.propertyPages">
+        <page adaptable="true" class="org.datanucleus.ide.eclipse.preferences.GeneralPreferencePage"
+            id="org.datanucleus.ide.eclipse.properties.general"
+            name="%preferencesGeneral"
+            objectClass="org.eclipse.core.resources.IProject"/>
+        <page adaptable="true" class="org.datanucleus.ide.eclipse.preferences.EnhancerPreferencePage"
+            category="org.datanucleus.ide.eclipse.properties.general"
+            id="org.datanucleus.ide.eclipse.properties.enhancer"
+            name="Enhancer"
+            objectClass="org.eclipse.core.resources.IProject"/>
+        <page adaptable="true" class="org.datanucleus.ide.eclipse.preferences.SchemaToolPreferencePage"
+            category="org.datanucleus.ide.eclipse.properties.general"
+            id="org.datanucleus.ide.eclipse.properties.schematool"
+            name="SchemaTool"
+            objectClass="org.eclipse.core.resources.IProject"/>
+    </extension>
+
+    <extension id="popups" name="DataNucleus Popups" point="org.eclipse.ui.popupMenus">
+        <!-- Package Explorer popup menu -->
+        <objectContribution objectClass="org.eclipse.jdt.core.IJavaProject"
+            id="datanucleus-eclipse.contribution.project.menu">
+            <menu label="DataNucleus" path="additions" id="datanucleus-eclipse.contribution.project.menu">
+                <separator name="enhancer"/>
+                <separator name="tools"/>
+                <separator name="nature"/>
+            </menu>
+        </objectContribution>
+
+        <objectContribution objectClass="org.eclipse.jdt.core.IJavaProject"
+            id="datanucleus-eclipse.contribution.project.actions">
+            <visibility>
+                <objectState name="nature" value="org.datanucleus.ide.eclipse.projectnature"/>
+            </visibility>
+            <action label="Create persistence.xml for project"
+               class="org.datanucleus.ide.eclipse.popup.actions.CreatePersistenceXmlAction"
+               menubarPath="datanucleus-eclipse.contribution.project.menu/tools"
+               id="datanucleus-eclipse.contribution.project.actions.persistencexml"/>
+            <action class="org.datanucleus.ide.eclipse.popup.actions.AutoEnhancementAction"
+               id="datanucleus-eclipse.contribution.project.actions.autoenhancement"
+               label="%actionAutoEnhancement"
+               menubarPath="datanucleus-eclipse.contribution.project.menu/enhancer"
+               style="toggle"/>
+            <action label="%actionSchemaTool"
+               class="org.datanucleus.ide.eclipse.popup.actions.SchemaToolAction"
+               menubarPath="datanucleus-eclipse.contribution.project.menu/tools"
+               id="datanucleus-eclipse.contribution.project.actions.schematool"/>
+            <action label="%actionEnhancerTool"
+               class="org.datanucleus.ide.eclipse.popup.actions.EnhancerToolAction"
+               menubarPath="datanucleus-eclipse.contribution.project.menu/tools"
+               id="datanucleus-eclipse.contribution.project.actions.enhancertool"/>
+        </objectContribution>
+
+        <objectContribution objectClass="org.eclipse.jdt.core.IJavaProject"
+            id="datanucleus-eclipse.contribution.project.actions.addnature">
+            <visibility>
+                <not>
+                    <objectState name="nature" value="org.datanucleus.ide.eclipse.projectnature"/>
+                </not>
+            </visibility>
+            <action class="org.datanucleus.ide.eclipse.popup.actions.AddNatureAction"
+               id="datanucleus-eclipse.contribution.project.actions.addnature"
+               label="%actionAddNature"
+               menubarPath="datanucleus-eclipse.contribution.project.menu/nature"/>
+        </objectContribution>
+
+        <objectContribution id="datanucleus-eclipse.contribution.project.actions.removenature"
+            objectClass="org.eclipse.jdt.core.IJavaProject">
+            <visibility>
+                <objectState name="nature" value="org.datanucleus.ide.eclipse.projectnature"/>
+            </visibility>
+            <action class="org.datanucleus.ide.eclipse.popup.actions.RemoveNatureAction"
+               id="datanucleus-eclipse.contribution.project.actions.removenature"
+               label="%actionRemoveNature"
+               menubarPath="datanucleus-eclipse.contribution.project.menu/nature"/>
+        </objectContribution>
+
+        <!-- ProjectExplorer popup menu -->
+        <!-- TODO Enable this when we get the nature part to work (i.e Add, then shows the menu items) -->
+        <!-- objectContribution objectClass="org.eclipse.core.resources.IProject"
+            id="datanucleus-eclipse.contribution.project.menu">
+            <menu label="DataNucleus" path="additions" id="datanucleus-eclipse.contribution.project.menu">
+                <separator name="enhancer"/>
+                <separator name="tools"/>
+                <separator name="nature"/>
+            </menu>
+        </objectContribution>
+
+        <objectContribution objectClass="org.eclipse.core.resources.IProject"
+            id="datanucleus-eclipse.contribution.project.actions">
+            <visibility>
+                <objectState name="nature" value="org.datanucleus.ide.eclipse.projectnature"/>
+            </visibility>
+            <action label="Create persistence.xml for project"
+               class="org.datanucleus.ide.eclipse.popup.actions.CreatePersistenceXmlAction"
+               menubarPath="datanucleus-eclipse.contribution.project.menu/tools"
+               id="datanucleus-eclipse.contribution.project.actions.persistencexml"/>
+            <action class="org.datanucleus.ide.eclipse.popup.actions.AutoEnhancementAction"
+               id="datanucleus-eclipse.contribution.project.actions.autoenhancement"
+               label="%actionAutoEnhancement"
+               menubarPath="datanucleus-eclipse.contribution.project.menu/enhancer"
+               style="toggle"/>
+            <action label="%actionSchemaTool"
+               class="org.datanucleus.ide.eclipse.popup.actions.SchemaToolAction"
+               menubarPath="datanucleus-eclipse.contribution.project.menu/tools"
+               id="datanucleus-eclipse.contribution.project.actions.schematool"/>
+            <action label="%actionEnhancerTool"
+               class="org.datanucleus.ide.eclipse.popup.actions.EnhancerToolAction"
+               menubarPath="datanucleus-eclipse.contribution.project.menu/tools"
+               id="datanucleus-eclipse.contribution.project.actions.enhancertool"/>
+        </objectContribution>
+
+        <objectContribution objectClass="org.eclipse.core.resources.IProject"
+            id="datanucleus-eclipse.contribution.project.actions.addnature">
+            <visibility>
+                <not>
+                    <objectState name="nature" value="org.datanucleus.ide.eclipse.projectnature"/>
+                </not>
+            </visibility>
+            <action class="org.datanucleus.ide.eclipse.popup.actions.AddNatureAction"
+               id="datanucleus-eclipse.contribution.project.actions.addnature"
+               label="%actionAddNature"
+               menubarPath="datanucleus-eclipse.contribution.project.menu/nature"/>
+        </objectContribution>
+
+        <objectContribution id="datanucleus-eclipse.contribution.project.actions.removenature"
+            objectClass="org.eclipse.core.resources.IProject">
+            <visibility>
+                <objectState name="nature" value="org.datanucleus.ide.eclipse.projectnature"/>
+            </visibility>
+            <action class="org.datanucleus.ide.eclipse.popup.actions.RemoveNatureAction"
+               id="datanucleus-eclipse.contribution.project.actions.removenature"
+               label="%actionRemoveNature"
+               menubarPath="datanucleus-eclipse.contribution.project.menu/nature"/>
+        </objectContribution -->
+
+        <!-- Create PK popup menu -->
+        <objectContribution objectClass="org.eclipse.jdt.core.IType" 
+            id="datanucleus-eclipse.contribution.file">
+            <visibility>
+                <objectState name="projectNature" value="org.datanucleus.ide.eclipse.projectnature"/>
+            </visibility>
+            <menu label="datanucleus" path="additions" id="datanucleus-eclipse.contribution.file.menu">
+                <separator name="group"/>
+            </menu>
+            <action label="Create Application ID Inner Class"
+               class="org.datanucleus.ide.eclipse.popup.actions.CreateAppId"
+               menubarPath="datanucleus-eclipse.contribution.file.menu/group"
+               id="datanucleus-eclipse.contribution.file.actions.createinner"/>
+        </objectContribution>
+
+        <!-- Create PK, and Create XML metadata popup menu -->
+        <objectContribution objectClass="org.eclipse.jdt.core.ICompilationUnit"
+            id="datanucleus-eclipse.contribution.compilation">
+            <visibility>
+                <objectState name="projectNature" value="org.datanucleus.ide.eclipse.projectnature"/>
+            </visibility>
+            <menu label="datanucleus" id="datanucleus-eclipse.contribution.compilation.menu">
+                <separator name="group"/>
+            </menu>
+            <action label="Create Application ID Inner Class"
+               class="org.datanucleus.ide.eclipse.popup.actions.CreateAppId"
+               menubarPath="datanucleus-eclipse.contribution.compilation.menu/group"
+               id="datanucleus-eclipse.contribution.compilation.actions.createinner"/>
+            <action label="Create JDO XML Metadata File"
+               class="org.datanucleus.ide.eclipse.popup.actions.CreateMetadataAction"
+               menubarPath="datanucleus-eclipse.contribution.compilation.menu/group"
+               id="datanucleus-eclipse.contribution.compilation.actions.createmetadata"/>
+        </objectContribution>
+
+        <!-- Create XML metadata and persistence.xml popup menu -->
+        <objectContribution objectClass="org.eclipse.jdt.core.IPackageFragment"
+            id="datanucleus-eclipse.contribution.package">
+            <visibility>
+                <objectState name="projectNature" value="org.datanucleus.ide.eclipse.projectnature"/>
+            </visibility>
+            <menu label="datanucleus" id="datanucleus-eclipse.contribution.package.menu">
+                <separator name="group"/>
+            </menu>
+            <action label="Create JDO XML Metadata File"
+               class="org.datanucleus.ide.eclipse.popup.actions.CreateMetadataAction"
+               menubarPath="datanucleus-eclipse.contribution.package.menu/group"
+               id="datanucleus-eclipse.contribution.package.actions.createmetadata"/>
+            <action label="Create persistence.xml File"
+               class="org.datanucleus.ide.eclipse.popup.actions.CreatePersistenceXmlAction"
+               menubarPath="datanucleus-eclipse.contribution.package.menu/group"
+               id="datanucleus-eclipse.contribution.package.actions.createmetadata"/>
+        </objectContribution>
+    </extension>
+
+    <extension point="org.datanucleus.ide.eclipse.urlTemplate">
+        <url-template driver-class-name="COM.ibm.db2.jdbc.net.DB2Driver"
+            url-template="jdbc:db2://hostname:port/dbname"/>
+        <url-template driver-class-name="COM.ibm.db2.jdbc.app.DB2Driver"
+            url-template="jdbc:db2:db-name"/>
+        <url-template driver-class-name="com.mysql.jdbc.Driver"
+            url-template="jdbc:mysql://host:port/db-name"/>
+        <url-template driver-class-name="com.microsoft.jdbc.sqlserver.SQLServerDriver"
+            url-template="jdbc:microsoft:sqlserver://host:port;DatabaseName=db-name;SelectMethod=cursor"/>
+        <url-template driver-class-name="oracle.jdbc.driver.OracleDriver"
+            url-template="jdbc:oracle:thin:@host:port:db-name"/>
+        <url-template driver-class-name="com.sybase.jdbc2.jdbc.SybDriver"
+            url-template="jdbc:sybase:Tds:host:port/db-name"/>
+        <url-template driver-class-name="org.hsqldb.jdbcDriver"
+            url-template="jdbc:hsqldb:hsql://host:port/db-name"/>
+        <url-template driver-class-name="com.mckoi.JDBCDriver"
+            url-template="jdbc:mckoi://host:port/db-name"/>
+        <url-template driver-class-name="org.postgresql.Driver"
+            url-template="jdbc:postgresql://host:port/db-name"/>
+        <url-template driver-class-name="org.apache.derby.jdbc.EmbeddedDriver"
+            url-template="jdbc:derby:/path/db-name;[create=true]"/>
+        <url-template driver-class-name="org.firebirdsql.jdbc.FBDriver"
+            url-template="jdbc:firebirdsql://hostname/db-name"/>
+        <url-template driver-class-name="org.apache.derby.jdbc.ClientDriver"
+            url-template="jdbc:derby:/path/db-name;[create=true]"/>
+        <url-template driver-class-name="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+            url-template="jdbc:sqlserver://serverName\instance:port;property=value[;property=value]"/>
+        <url-template driver-class-name="com.ibm.db2.jcc.DB2Driver"
+            url-template="jdbc:db2://host:port/db-name"/>
+    </extension>
+</plugin>
