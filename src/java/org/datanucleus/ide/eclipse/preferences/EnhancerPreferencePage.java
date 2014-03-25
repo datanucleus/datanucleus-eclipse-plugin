@@ -241,6 +241,7 @@ public class EnhancerPreferencePage extends PropertyAndPreferencePage implements
     @Override
     public void init(IWorkbench workbench)
     {
+        getPreferenceStore().setDefault(ENHANCER_USE_FILE_LIST_FILE, ENHANCER_USE_FILE_LIST_FILE_DEFAULT_VALUE);
     }
 
     /**
@@ -255,10 +256,7 @@ public class EnhancerPreferencePage extends PropertyAndPreferencePage implements
         captureOutputCheckButton.setSelection(getPreferenceStore().getBoolean(ENHANCER_CAPTURE_OUTPUT));
         verboseModeCheckButton.setGrayed(!captureOutputCheckButton.getSelection());
         verboseModeCheckButton.setSelection(getPreferenceStore().getBoolean(ENHANCER_VERBOSE_MODE));
-
-        getPreferenceStore().setDefault(ENHANCER_USE_FILE_LIST_FILE, ENHANCER_USE_FILE_LIST_FILE_DEFAULT_VALUE);
         useFileListFileButton.setSelection(getPreferenceStore().getBoolean(ENHANCER_USE_FILE_LIST_FILE));
-
         persistenceUnitText.setText(getPreferenceStore().getString(ENHANCER_PERSISTENCE_UNIT));
     }
 

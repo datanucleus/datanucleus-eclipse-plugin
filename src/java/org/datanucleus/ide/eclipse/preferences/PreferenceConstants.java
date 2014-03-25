@@ -19,6 +19,7 @@ package org.datanucleus.ide.eclipse.preferences;
 
 import java.io.File;
 
+
 /**
  * Convenience class with a series of constants.
  */
