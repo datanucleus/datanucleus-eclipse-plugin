@@ -17,7 +17,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.jdt.launching,
  org.eclipse.jface.text,
  org.eclipse.debug.ui,
- org.eclipse.ui.console
+ org.eclipse.ui.console,
+ org.eclipse.core.externaltools
 Eclipse-AutoStart: true
 Export-Package: org.datanucleus.ide.eclipse,
  org.datanucleus.ide.eclipse.console,

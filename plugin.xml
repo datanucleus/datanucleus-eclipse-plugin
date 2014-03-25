@@ -64,9 +64,11 @@
     </extension>
 
     <extension id="popups" name="DataNucleus Popups" point="org.eclipse.ui.popupMenus">
-        <!-- Package Explorer popup menu -->
-        <objectContribution objectClass="org.eclipse.jdt.core.IJavaProject"
-            id="datanucleus-eclipse.contribution.project.menu">
+        <!-- Package Explorer / Project Explorer popup menu -->
+        <!-- Note: 'objectClass="org.eclipse.jdt.core.IJavaProject"' does not work in Project Explorer! -->
+        <objectContribution id="datanucleus-eclipse.contribution.project.menu"
+            objectClass="org.eclipse.core.resources.IProject"
+            adaptable="true">
             <menu label="DataNucleus" path="additions" id="datanucleus-eclipse.contribution.project.menu">
                 <separator name="enhancer"/>
                 <separator name="tools"/>
@@ -74,8 +76,9 @@
             </menu>
         </objectContribution>
 
-        <objectContribution objectClass="org.eclipse.jdt.core.IJavaProject"
-            id="datanucleus-eclipse.contribution.project.actions">
+        <objectContribution id="datanucleus-eclipse.contribution.project.actions"
+            objectClass="org.eclipse.core.resources.IProject"
+            adaptable="true">
             <visibility>
                 <objectState name="nature" value="org.datanucleus.ide.eclipse.projectnature"/>
             </visibility>
@@ -98,12 +101,16 @@
                id="datanucleus-eclipse.contribution.project.actions.enhancertool"/>
         </objectContribution>
 
-        <objectContribution objectClass="org.eclipse.jdt.core.IJavaProject"
-            id="datanucleus-eclipse.contribution.project.actions.addnature">
+        <objectContribution id="datanucleus-eclipse.contribution.project.actions.addnature"
+        	objectClass="org.eclipse.core.resources.IProject"
+        	adaptable="true">
             <visibility>
-                <not>
-                    <objectState name="nature" value="org.datanucleus.ide.eclipse.projectnature"/>
-                </not>
+                <and>
+                    <objectState name="nature" value="org.eclipse.jdt.core.javanature"/>
+                    <not>
+                        <objectState name="nature" value="org.datanucleus.ide.eclipse.projectnature"/>
+                    </not>
+                </and>
             </visibility>
             <action class="org.datanucleus.ide.eclipse.popup.actions.AddNatureAction"
                id="datanucleus-eclipse.contribution.project.actions.addnature"
@@ -112,7 +119,8 @@
         </objectContribution>
 
         <objectContribution id="datanucleus-eclipse.contribution.project.actions.removenature"
-            objectClass="org.eclipse.jdt.core.IJavaProject">
+            adaptable="true"
+            objectClass="org.eclipse.core.resources.IProject">
             <visibility>
                 <objectState name="nature" value="org.datanucleus.ide.eclipse.projectnature"/>
             </visibility>
@@ -182,7 +190,8 @@
         </objectContribution -->
 
         <!-- Create PK popup menu -->
-        <objectContribution objectClass="org.eclipse.jdt.core.IType" 
+        <objectContribution objectClass="org.eclipse.jdt.core.IType"
+            adaptable="true"
             id="datanucleus-eclipse.contribution.file">
             <visibility>
                 <objectState name="projectNature" value="org.datanucleus.ide.eclipse.projectnature"/>
@@ -198,6 +207,7 @@
 
         <!-- Create PK, and Create XML metadata popup menu -->
         <objectContribution objectClass="org.eclipse.jdt.core.ICompilationUnit"
+            adaptable="true"
             id="datanucleus-eclipse.contribution.compilation">
             <visibility>
                 <objectState name="projectNature" value="org.datanucleus.ide.eclipse.projectnature"/>
@@ -217,6 +227,7 @@
 
         <!-- Create XML metadata and persistence.xml popup menu -->
         <objectContribution objectClass="org.eclipse.jdt.core.IPackageFragment"
+            adaptable="true"
             id="datanucleus-eclipse.contribution.package">
             <visibility>
                 <objectState name="projectNature" value="org.datanucleus.ide.eclipse.projectnature"/>
