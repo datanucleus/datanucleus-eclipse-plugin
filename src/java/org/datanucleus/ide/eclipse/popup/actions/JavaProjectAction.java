@@ -16,6 +16,10 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
+/**
+ * Common super-class for {@link IJavaProject}-related actions.
+ * @author Marco หงุ่ยตระกูล-Schulze - marco at codewizards dot co
+ */
 public abstract class JavaProjectAction implements IObjectActionDelegate {
 
     private IAction action;
@@ -36,18 +40,35 @@ public abstract class JavaProjectAction implements IObjectActionDelegate {
         this.activePart = targetPart;
     }
 
+    /**
+     * Gets the associated {@link IAction}, if {@link #selectionChanged(IAction, ISelection) selectionChanged(...)}
+     * or {@link #setActivePart(IAction, IWorkbenchPart) setActivePart(...)} were already invoked.
+     * @return the associated {@link IAction} or <code>null</code>, if there is none (yet).
+     */
     protected IAction getAction() {
         return action;
     }
 
+    /**
+     * Gets the current selection, if {@link #selectionChanged(IAction, ISelection)} was already invoked.
+     * @return the current selection or <code>null</code>, if there is none (yet).
+     */
     protected ISelection getSelection() {
         return selection;
     }
 
+    /**
+     * Gets the current {@link IWorkbenchPart}, if {@link #setActivePart(IAction, IWorkbenchPart)} was already invoked.
+     * @return the current {@link IWorkbenchPart} or <code>null</code>, if there is none (yet).
+     */
     protected IWorkbenchPart getActivePart() {
         return activePart;
     }
 
+    /**
+     * Gets the current selection, if it is an instance of {@link IStructuredSelection}.
+     * @return the current selection, if it is an instance of {@link IStructuredSelection}; otherwise <code>null</code>.
+     */
     protected IStructuredSelection getStructuredSelection() {
         final ISelection selection = getSelection();
         if (selection instanceof IStructuredSelection)
@@ -56,6 +77,10 @@ public abstract class JavaProjectAction implements IObjectActionDelegate {
             return null;
     }
 
+    /**
+     * Gets the {@link IJavaProject}s from the current {@link #getSelection()}.
+     * @return the currently selected {@link IJavaProject}s. Never <code>null</code>, but maybe empty.
+     */
     protected List<IJavaProject> getSelectedJavaProjects() {
         try {
             final IStructuredSelection selection = getStructuredSelection();

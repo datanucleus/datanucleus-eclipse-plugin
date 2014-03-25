@@ -2,7 +2,7 @@
  Copyright (c) 2005 Michael Grundmann and others.
  All rights reserved. This program and the accompanying materials
  are made available under the terms of the JPOX License v1.0
- which accompanies this distribution. 
+ which accompanies this distribution.
 
  Contributors:
  ...
@@ -21,10 +21,10 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 
 /**
- * Utility class to support nature usage and project specific properties. If special properties are 
- * set for the underlying resource we use them, otherwise we get the common values from the plugin's 
+ * Utility class to support nature usage and project specific properties. If special properties are
+ * set for the underlying resource we use them, otherwise we get the common values from the plugin's
  * preference store.
- * 
+ *
  * @version $Revision: 1.4 $
  */
 public class ProjectHelper
@@ -76,6 +76,11 @@ public class ProjectHelper
 
     public static boolean getBooleanPreferenceValue(IResource resource, String pageId, String name)
     {
+        return getBooleanPreferenceValue(resource, pageId, name, false);
+    }
+
+    public static boolean getBooleanPreferenceValue(IResource resource, String pageId, String name, boolean defaultValue)
+    {
         IProject project = resource.getProject();
         String value = null;
         if (useProjectSettings(project, pageId))
@@ -88,14 +93,14 @@ public class ProjectHelper
                 return false;
         }
         value = store.getString(name);
-        if (value != null)
+        if (value != null && !value.isEmpty())
         {
             if (value.equals(IPreferenceStore.TRUE))
                 return true;
             else
                 return false;
         }
-        return false;
+        return defaultValue;
     }
 
     public static String getStringPreferenceValue(IResource resource, String pageId, String name)
@@ -124,7 +129,7 @@ public class ProjectHelper
 
     /**
      * @param project
-     * @return true if using project settings 
+     * @return true if using project settings
      */
     private static boolean useProjectSettings(IResource resource, String pageId)
     {

@@ -16,6 +16,7 @@ import org.eclipse.jface.action.IAction;
 
 /**
  * @author Tony Lai
+ * @author Marco หงุ่ยตระกูล-Schulze - marco at codewizards dot co
  * @version $Revision: 1.2 $
  */
 public class EnhancerToolAction extends JavaProjectAction

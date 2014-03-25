@@ -17,44 +17,62 @@ Contributors:
 **********************************************************************/
 package org.datanucleus.ide.eclipse.preferences;
 
+import java.io.File;
+
 /**
  * Convenience class with a series of constants.
  */
 public interface PreferenceConstants
 {
-    public String PERSISTENCE_API = "persistenceAPI";
+    String PERSISTENCE_API = "persistenceAPI";
 
-    public String LOGGING_CONFIGURATION_FILE = "loggingConfigurationFile";
+    String LOGGING_CONFIGURATION_FILE = "loggingConfigurationFile";
 
-    public String CLASSPATH_ENTRIES = "classpathEntries";
+    String CLASSPATH_ENTRIES = "classpathEntries";
 
-    public String USE_PROJECT_CLASSPATH = "useProjectClasspath";
+    String USE_PROJECT_CLASSPATH = "useProjectClasspath";
 
-    public String ENHANCER_AUTO_ENHANCEMENT = "enhancerAutoEnhancement";
+    String ENHANCER_AUTO_ENHANCEMENT = "enhancerAutoEnhancement";
 
-    public String ENHANCER_VERBOSE_MODE = "enhancerVerboseMode";
-    
-    public String ENHANCER_CAPTURE_OUTPUT = "enhancerCaptureOutput";
+    String ENHANCER_VERBOSE_MODE = "enhancerVerboseMode";
 
-    public String ENHANCER_INPUT_FILE_EXTENSIONS = "enhancerInputFileExtensions";
+    String ENHANCER_CAPTURE_OUTPUT = "enhancerCaptureOutput";
 
-    public String ENHANCER_PERSISTENCE_UNIT = "enhancerPersistenceUnit";
+    String ENHANCER_INPUT_FILE_EXTENSIONS = "enhancerInputFileExtensions";
 
-    public String SCHEMATOOL_INPUT_FILE_EXTENSIONS = "schematoolInputFileExtensions";
+    String ENHANCER_PERSISTENCE_UNIT = "enhancerPersistenceUnit";
 
-    public String SCHEMATOOL_DATASTORE_DRIVERJAR = "schemaToolConnectionDriverJar";
+    /**
+     * Whether to use a file-list-file.
+     * <p>
+     * See: <a href="http://www.datanucleus.org/servlet/jira/browse/NUCACCECLIPSE-11">NUCACCECLIPSE-11</a>
+     */
+    String ENHANCER_USE_FILE_LIST_FILE = "useFileListFile";
 
-    public String SCHEMATOOL_DATASTORE_DRIVERNAME = "schemaToolConnectionDriverName";
+    /**
+     * The default value for the setting {@link #ENHANCER_USE_FILE_LIST_FILE}.
+     * <p>
+     * This default value is <code>true</code> on Windows and <code>false</code> on all
+     * other systems (primarily GNU/Linux).
+     */
+    boolean ENHANCER_USE_FILE_LIST_FILE_DEFAULT_VALUE = File.separatorChar == '\\';
 
-    public String SCHEMATOOL_DATASTORE_URL = "schemaToolConnectionURL";
+    String SCHEMATOOL_INPUT_FILE_EXTENSIONS = "schematoolInputFileExtensions";
 
-    public String SCHEMATOOL_DATASTORE_USERNAME = "schemaToolConnectionUsername";
+    String SCHEMATOOL_DATASTORE_DRIVERJAR = "schemaToolConnectionDriverJar";
 
-    public String SCHEMATOOL_DATASTORE_PASSWORD = "schemaToolConnectionPassword";
+    String SCHEMATOOL_DATASTORE_DRIVERNAME = "schemaToolConnectionDriverName";
 
-    public String SCHEMATOOL_PROPERTIES_FILE = "schemaToolPropertiesFile";
+    String SCHEMATOOL_DATASTORE_URL = "schemaToolConnectionURL";
 
-    public String SCHEMATOOL_VERBOSE_MODE = "schemaToolVerboseMode";
+    String SCHEMATOOL_DATASTORE_USERNAME = "schemaToolConnectionUsername";
 
-    public String SCHEMATOOL_PERSISTENCE_UNIT = "schematoolPersistenceUnit";
+    String SCHEMATOOL_DATASTORE_PASSWORD = "schemaToolConnectionPassword";
+
+    String SCHEMATOOL_PROPERTIES_FILE = "schemaToolPropertiesFile";
+
+    String SCHEMATOOL_VERBOSE_MODE = "schemaToolVerboseMode";
+
+    String SCHEMATOOL_PERSISTENCE_UNIT = "schematoolPersistenceUnit";
+
 }

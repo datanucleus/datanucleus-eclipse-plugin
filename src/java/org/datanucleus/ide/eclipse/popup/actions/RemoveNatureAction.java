@@ -18,6 +18,7 @@ import org.eclipse.jface.action.IAction;
 
 /**
  * @author erik
+ * @author Marco หงุ่ยตระกูล-Schulze - marco at codewizards dot co
  * @version $Revision: 1.2 $
  */
 public class RemoveNatureAction extends JavaProjectAction

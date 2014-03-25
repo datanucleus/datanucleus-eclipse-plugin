@@ -32,7 +32,10 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.QualifiedName;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -61,16 +64,17 @@ public class LaunchUtilities implements IJavaLaunchConfigurationConstants
      * @param workingDir
      * @param programArgs
      * @param processId unique id for the process
-     * @param captureOutput 
+     * @param captureOutput
      * @return the result of the launch session
      * @throws CoreException
      */
-    public static ILaunch launch(IJavaProject javaProject, String name, String mainClass, List classpath, String vmArgs, 
+    public static ILaunch launch(IJavaProject javaProject, String name, String mainClass, List classpath, String vmArgs,
             String workingDir, String programArgs, String processId, boolean captureOutput)
         throws CoreException
     {
         ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
         ILaunchConfigurationType type = manager.getLaunchConfigurationType(IJavaLaunchConfigurationConstants.ID_JAVA_APPLICATION);
+//        ILaunchConfigurationType type = manager.getLaunchConfigurationType(IExternalToolConstants.ID_PROGRAM_LAUNCH_CONFIGURATION_TYPE);
         ILaunchConfiguration[] configurations = manager.getLaunchConfigurations(type);
         ILaunchConfiguration config = null;
         for (int i = 0; i < configurations.length; i++)
@@ -82,13 +86,15 @@ public class LaunchUtilities implements IJavaLaunchConfigurationConstants
             }
         }
         ILaunchConfigurationWorkingCopy wc = type.newInstance(null, name);
-        wc.setAttribute(DebugPlugin.ATTR_CAPTURE_OUTPUT, captureOutput);        
+        wc.setAttribute(DebugPlugin.ATTR_CAPTURE_OUTPUT, captureOutput);
+//        String location = javaProject.getProject().getLocation().toOSString();
+//        wc.setAttribute(IExternalToolConstants.ATTR_LOCATION, location);
         wc.setAttribute(ATTR_DEFAULT_CLASSPATH, false);
         wc.setAttribute(ATTR_CLASSPATH, classpath);
         wc.setAttribute(ATTR_PROJECT_NAME, javaProject.getProject().getName());
         wc.setAttribute(ATTR_MAIN_TYPE_NAME, mainClass);
         wc.setAttribute(ATTR_SOURCE_PATH, getProjectSourcePath(javaProject));
-      
+
         wc.setAttribute(ATTR_VM_ARGUMENTS, vmArgs);
         if (workingDir != null)
         {
@@ -108,8 +114,8 @@ public class LaunchUtilities implements IJavaLaunchConfigurationConstants
         list.add(entry.getMemento());
 
         return list;
-    }    
-    
+    }
+
     /**
      * Utility method to obtain the classpath entries for the given <code>IJavaProject</code>
      * @param javaProject The <code>IJavaProject</code> the classpath should be obtained for
@@ -192,7 +198,7 @@ public class LaunchUtilities implements IJavaLaunchConfigurationConstants
             IWorkspaceRoot root = javaProject.getProject().getWorkspace().getRoot();
             if( javaProject.getPath().equals(relativeOutLocation))
             {
-                outputDir = javaProject.getProject().getLocation().toOSString();                
+                outputDir = javaProject.getProject().getLocation().toOSString();
             }
             else
             {
@@ -236,10 +242,10 @@ public class LaunchUtilities implements IJavaLaunchConfigurationConstants
      * @param quoteArgs Whether to quote any args
      * @return A <code>List</code> of metadata file locations
      */
-    public static List getInputFiles(List args, IResource resource, IJavaProject javaProject, String[] preferenceFileSuffix, boolean quoteArgs)
+    public static List<String> getInputFiles(List<String> args, IResource resource, IJavaProject javaProject, String[] preferenceFileSuffix, boolean quoteArgs)
     {
         // Create a set of valid input file suffixes
-        Set fileSuffixes = new HashSet();
+        Set<String> fileSuffixes = new HashSet<String>();
         // If file suffixes had been passed to this method...
         if (preferenceFileSuffix != null)
         {
@@ -270,7 +276,7 @@ public class LaunchUtilities implements IJavaLaunchConfigurationConstants
             }
             catch (CoreException e)
             {
-                e.printStackTrace(); // TODO Error handling
+                throw new RuntimeException(e);
             }
             return args;
         }

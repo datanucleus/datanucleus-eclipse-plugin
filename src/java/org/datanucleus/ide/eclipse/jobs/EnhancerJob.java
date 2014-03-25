@@ -18,7 +18,12 @@ Contributors:
 **********************************************************************/
 package org.datanucleus.ide.eclipse.jobs;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.datanucleus.ide.eclipse.preferences.EnhancerPreferencePage;
@@ -49,7 +54,8 @@ public class EnhancerJob extends WorkspaceJob
         super(NAME);
         this.javaProject = javaProject;
     }
- 
+
+    @Override
     public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException
     {
         List classpath = LaunchUtilities.getDefaultClasspath(javaProject);
@@ -64,7 +70,7 @@ public class EnhancerJob extends WorkspaceJob
 
     private static String getProgramArguments(IResource resource, IJavaProject javaProject)
     {
-        StringBuffer args = new StringBuffer();
+        StringBuilder args = new StringBuilder();
 
         // API
         String apiName = ProjectHelper.getStringPreferenceValue(resource, GeneralPreferencePage.PAGE_ID,
@@ -96,18 +102,63 @@ public class EnhancerJob extends WorkspaceJob
 
         // Input files (jdo/class)
         if (!usingPersistenceUnit)
-        {
-            List argsList = new ArrayList();
-            String fileSuffix = ProjectHelper.getStringPreferenceValue(resource, 
-                EnhancerPreferencePage.PAGE_ID, PreferenceConstants.ENHANCER_INPUT_FILE_EXTENSIONS);
-            String[] fileSuffixes = fileSuffix.split(System.getProperty("path.separator"));
-            LaunchUtilities.getInputFiles(argsList, resource, javaProject, fileSuffixes, true);
-            for (int i = 0; i < argsList.size(); i++)
-            {
-                args.append(argsList.get(i));
-            }
-        }
+            appendInputFiles(args, resource, javaProject);
 
         return args.toString();
+    }
+
+    private static void appendInputFiles(StringBuilder args, IResource resource, IJavaProject javaProject) {
+        final boolean useFileListFile = ProjectHelper.getBooleanPreferenceValue(resource, EnhancerPreferencePage.PAGE_ID,
+                PreferenceConstants.ENHANCER_USE_FILE_LIST_FILE,
+                PreferenceConstants.ENHANCER_USE_FILE_LIST_FILE_DEFAULT_VALUE);
+
+        final String fileSuffix = ProjectHelper.getStringPreferenceValue(resource,
+                EnhancerPreferencePage.PAGE_ID, PreferenceConstants.ENHANCER_INPUT_FILE_EXTENSIONS);
+        final String[] fileSuffixes = fileSuffix.split(System.getProperty("path.separator"));
+
+        final List<String> inputFiles = new ArrayList<String>();
+        LaunchUtilities.getInputFiles(inputFiles, resource, javaProject, fileSuffixes, !useFileListFile);
+
+        if (useFileListFile) {
+            File fileListFile = writeFileListFile(inputFiles);
+            args.append(" -flf \"").append(fileListFile.getAbsolutePath()).append('"');
+        }
+        else {
+            for (int i = 0; i < inputFiles.size(); i++)
+            {
+                args.append(inputFiles.get(i));
+            }
+        }
+    }
+
+    /**
+     * Writes the given {@code files} into a temporary file. The file is deleted by the enhancer.
+     *
+     * @param files the list of files to be written into the file (UTF-8-encoded). Must not be <code>null</code>.
+     * @return the temporary file.
+     */
+    private static File writeFileListFile(Collection<String> files) {
+        try {
+            File fileListFile = File.createTempFile("enhancer-", ".flf");
+            FileOutputStream out = new FileOutputStream(fileListFile);
+            try {
+                OutputStreamWriter w = new OutputStreamWriter(out, "UTF-8");
+                try {
+                    for (String file : files) {
+                        w.write(file);
+                        // The enhancer uses a BufferedReader, which accepts all types of line feeds (CR, LF, CRLF).
+                        // Therefore a single \n is fine.
+                        w.write('\n');
+                    }
+                } finally {
+                    w.close();
+                }
+            } finally {
+                out.close();
+            }
+            return fileListFile;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

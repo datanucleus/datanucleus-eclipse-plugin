@@ -45,11 +45,17 @@ public class EnhancerPreferencePage extends PropertyAndPreferencePage implements
 {
     public static final String PAGE_ID = "org.datanucleus.ide.eclipse.preferences.enhancer";
 
-    /** Button containing whether to run the enhancer in verbose mode or not. */
+    /** Check-box containing whether to run the enhancer in verbose mode or not. */
     private Button verboseModeCheckButton;
-    
-    /** Button indicating whether to capture the enhancer output or not. */
+
+    /** Check-box indicating whether to capture the enhancer output or not. */
     private Button captureOutputCheckButton;
+
+    /**
+     * Check-box indicating whether to use a file-list-file.
+     * @see PreferenceConstants#ENHANCER_USE_FILE_LIST_FILE
+     */
+    private Button useFileListFileButton;
 
     /** List containing the selected file extensions to use when enhancing. */
     private List fileExtensionsList;
@@ -69,6 +75,7 @@ public class EnhancerPreferencePage extends PropertyAndPreferencePage implements
      * (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#createContents(org.eclipse.swt.widgets.Composite)
      */
+    @Override
     protected Control createContents(Composite parent)
     {
         Composite composite = (Composite) super.createContents(parent);
@@ -126,12 +133,17 @@ public class EnhancerPreferencePage extends PropertyAndPreferencePage implements
         captureOutputCheckButton.setLayoutData(new GridData(SWT.FILL, SWT.NULL, true, false, 2, 1));
         captureOutputCheckButton.setToolTipText(Localiser.getString("EnhancerPreferences.Capture.Output.Tooltip"));
         captureOutputCheckButton.addSelectionListener(selectionListener);
-        
+
         // Verbose
         verboseModeCheckButton = new Button(composite, SWT.CHECK);
         verboseModeCheckButton.setText(Localiser.getString("EnhancerPreferences.Verbose.Label"));
         verboseModeCheckButton.setLayoutData(new GridData(SWT.FILL, SWT.NULL, true, false, 2, 1));
         verboseModeCheckButton.setToolTipText(Localiser.getString("EnhancerPreferences.Verbose.Tooltip"));
+
+        useFileListFileButton = new Button(composite, SWT.CHECK);
+        useFileListFileButton.setText(Localiser.getString("EnhancerPreferences.UseFileListFile.Label"));
+        useFileListFileButton.setLayoutData(new GridData(SWT.FILL, SWT.NULL, true, false, 2, 1));
+        useFileListFileButton.setToolTipText(Localiser.getString("EnhancerPreferences.UseFileListFile.Tooltip"));
 
         // Persistence Unit
         Label persistenceUnitLabel = new Label(composite, SWT.NULL);
@@ -152,6 +164,7 @@ public class EnhancerPreferencePage extends PropertyAndPreferencePage implements
     {
         SelectionAdapter selectionListener = new SelectionAdapter()
         {
+            @Override
             public void widgetSelected(SelectionEvent event)
             {
                 Widget widget = event.widget;
@@ -183,7 +196,7 @@ public class EnhancerPreferencePage extends PropertyAndPreferencePage implements
         for (int i = 0; i < fileExtensionsArray.length; i++)
         {
             fileExtensions.append(fileExtensionsArray[i]);
-            fileExtensions.append(System.getProperty("path.separator")); //$NON-NLS-1$ 
+            fileExtensions.append(System.getProperty("path.separator")); //$NON-NLS-1$
         }
         return fileExtensions.toString();
     }
@@ -206,12 +219,12 @@ public class EnhancerPreferencePage extends PropertyAndPreferencePage implements
             fileExtensionsList.add(result);
         }
     }
-	
-    private void handleToggleCaptureOutputCheckButton() 
+
+    private void handleToggleCaptureOutputCheckButton()
     {
         verboseModeCheckButton.setGrayed(!captureOutputCheckButton.getSelection());
 	}
-	
+
     private void handleRemoveFileExtension()
     {
         int index = fileExtensionsList.getSelectionIndex();
@@ -225,6 +238,7 @@ public class EnhancerPreferencePage extends PropertyAndPreferencePage implements
      * (non-Javadoc)
      * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
      */
+    @Override
     public void init(IWorkbench workbench)
     {
     }
@@ -241,6 +255,10 @@ public class EnhancerPreferencePage extends PropertyAndPreferencePage implements
         captureOutputCheckButton.setSelection(getPreferenceStore().getBoolean(ENHANCER_CAPTURE_OUTPUT));
         verboseModeCheckButton.setGrayed(!captureOutputCheckButton.getSelection());
         verboseModeCheckButton.setSelection(getPreferenceStore().getBoolean(ENHANCER_VERBOSE_MODE));
+
+        getPreferenceStore().setDefault(ENHANCER_USE_FILE_LIST_FILE, ENHANCER_USE_FILE_LIST_FILE_DEFAULT_VALUE);
+        useFileListFileButton.setSelection(getPreferenceStore().getBoolean(ENHANCER_USE_FILE_LIST_FILE));
+
         persistenceUnitText.setText(getPreferenceStore().getString(ENHANCER_PERSISTENCE_UNIT));
     }
 
@@ -248,11 +266,13 @@ public class EnhancerPreferencePage extends PropertyAndPreferencePage implements
      * (non-Javadoc)
      * @see org.eclipse.jface.preference.IPreferencePage#performOk()
      */
+    @Override
     public boolean performOk()
     {
         getPreferenceStore().setValue(ENHANCER_INPUT_FILE_EXTENSIONS, getFileExtensions());
         getPreferenceStore().setValue(ENHANCER_VERBOSE_MODE, verboseModeCheckButton.getSelection());
         getPreferenceStore().setValue(ENHANCER_CAPTURE_OUTPUT, captureOutputCheckButton.getSelection());
+        getPreferenceStore().setValue(ENHANCER_USE_FILE_LIST_FILE, useFileListFileButton.getSelection());
         getPreferenceStore().setValue(ENHANCER_PERSISTENCE_UNIT, persistenceUnitText.getText());
 
         return super.performOk();
@@ -262,6 +282,7 @@ public class EnhancerPreferencePage extends PropertyAndPreferencePage implements
      * (non-Javadoc)
      * @see org.datanucleus.ide.eclipse.preferences.PropertyAndPreferencePage#getPageId()
      */
+    @Override
     protected String getPageId()
     {
         return PAGE_ID;

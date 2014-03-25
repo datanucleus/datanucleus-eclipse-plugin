@@ -19,6 +19,7 @@ import org.eclipse.jface.viewers.ISelection;
 
 /**
  * @author Michael Grundmann
+ * @author Marco หงุ่ยตระกูล-Schulze - marco at codewizards dot co
  * @version $Revision: 1.3 $
  */
 public class AutoEnhancementAction extends JavaProjectAction
