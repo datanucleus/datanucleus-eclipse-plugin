@@ -75,9 +75,10 @@ public class SchemaToolWizard extends Wizard implements INewWizard
     // the workbench instance
     protected IWorkbench workbench;
 
-    public SchemaToolWizard()
+    public SchemaToolWizard(IJavaProject javaProj)
     {
         model = new SchemaToolModel();
+        javaProject = javaProj;
     }
 
     public void addPages()
@@ -136,15 +137,6 @@ public class SchemaToolWizard extends Wizard implements INewWizard
     {
         this.workbench = workbench;
         this.selection = selection;
-        if (selection == null)
-        {
-            return;
-        }
-        if (!IJavaProject.class.isAssignableFrom(selection.getFirstElement().getClass()))
-        {
-            return;
-        }
-        javaProject = (IJavaProject) selection.getFirstElement();
     }
 
     public boolean canFinish()
@@ -176,7 +168,7 @@ public class SchemaToolWizard extends Wizard implements INewWizard
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            Plugin.log("Error creating SchemaTool job", e);
         }
         return true;
     }

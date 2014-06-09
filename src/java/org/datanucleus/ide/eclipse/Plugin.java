@@ -21,8 +21,6 @@ package org.datanucleus.ide.eclipse;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -40,8 +38,6 @@ import org.osgi.framework.BundleContext;
 
 /**
  * Entry point for the DataNucleus Eclipse plugin.
- * 
- * @version $Revision: 1.7 $
  */
 public class Plugin extends AbstractUIPlugin
 {
@@ -50,9 +46,6 @@ public class Plugin extends AbstractUIPlugin
 
     // The shared instance.
     private static Plugin plugin;
-
-    // Resource bundle.
-    private ResourceBundle resourceBundle;
 
     /**
      * Unique identifier constant (value <code>"org.datanucleus.ide.eclipse"</code>)
@@ -69,23 +62,8 @@ public class Plugin extends AbstractUIPlugin
     public Plugin()
     {
         super();
+
         plugin = this;
-        try
-        {
-            resourceBundle = ResourceBundle.getBundle("org.datanucleus.ide.eclipse.JDOResources");
-        }
-        catch (MissingResourceException x)
-        {
-            try
-            {
-                // WORKAROUND: when using export, the PDE export tool, puts the properties file under java in the jar
-                resourceBundle = ResourceBundle.getBundle("java.org.datanucleus.ide.eclipse.JDOResources");
-            }
-            catch (MissingResourceException x1)
-            {
-                resourceBundle = null;
-            }
-        }
     }
 
     /**
@@ -115,22 +93,6 @@ public class Plugin extends AbstractUIPlugin
     public static String getPluginId()
     {
         return getDefault().getBundle().getSymbolicName();
-    }
-
-    /**
-     * Returns the string from the plugin's resource bundle, or 'key' if not found.
-     */
-    public static String getResourceString(String key)
-    {
-        ResourceBundle bundle = Plugin.getDefault().getResourceBundle();
-        try
-        {
-            return (bundle != null) ? bundle.getString(key) : key;
-        }
-        catch (MissingResourceException e)
-        {
-            return key;
-        }
     }
 
     public static IWorkspace getWorkspace()
@@ -179,11 +141,6 @@ public class Plugin extends AbstractUIPlugin
             return new Path(FileLocator.resolve(logFileURL).getPath());
         }
         return null;
-    }
-
-    public ResourceBundle getResourceBundle()
-    {
-        return resourceBundle;
     }
 
     public static void logError(String message)

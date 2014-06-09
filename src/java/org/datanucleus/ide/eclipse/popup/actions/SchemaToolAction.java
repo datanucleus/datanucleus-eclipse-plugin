@@ -1,100 +1,62 @@
 /**********************************************************************
- Copyright (c) Sep 2, 2004 Erik Bengtson and others.
- All rights reserved. This program and the accompanying materials
- are made available under the terms of the JPOX License v1.0
- which accompanies this distribution. 
+Copyright (c) 2004 Erik Bengtson and others. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
- Contributors:
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Contributors:
+2014 Andy Jefferson - changed to inherit JavaProjectAction
  ...
  **********************************************************************/
 package org.datanucleus.ide.eclipse.popup.actions;
 
-import org.datanucleus.ide.eclipse.project.ProjectNature;
+import java.util.List;
+
+import org.datanucleus.ide.eclipse.Plugin;
 import org.datanucleus.ide.eclipse.wizard.schematool.SchemaToolWizard;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IActionDelegate;
-import org.eclipse.ui.IObjectActionDelegate;
-import org.eclipse.ui.IWorkbenchPart;
-
 
 /**
- * @author erik
- * @version $Revision: 1.2 $
+ * Action invoked when the user selects the popup menu option "SchemaTool" from a Java project.
  */
-public class SchemaToolAction implements IObjectActionDelegate
+public class SchemaToolAction extends JavaProjectAction
 {
-
-    private ISelection lastSelection;
-
-    private IWorkbenchPart part;
-
-    /**
-     * Constructor for SchemaToolAction.
-     */
-    public SchemaToolAction()
-    {
-        super();
-    }
-
-    /**
-     * @see IObjectActionDelegate#setActivePart(IAction, IWorkbenchPart)
-     */
-    public void setActivePart(IAction action, IWorkbenchPart targetPart)
-    {
-        this.part = targetPart;
-    }
-
     /**
      * @see IActionDelegate#run(IAction)
      */
     public void run(IAction action)
     {
-        // Instantiates and initializes the wizard
-        SchemaToolWizard wizard = new SchemaToolWizard();
-        if ((lastSelection instanceof IStructuredSelection) || (lastSelection == null))
-            wizard.init(part.getSite().getWorkbenchWindow().getWorkbench(), (IStructuredSelection) lastSelection);
+        List<IJavaProject> javaProjects = getSelectedJavaProjects();
+
+        IJavaProject javaProject = javaProjects.isEmpty() ? null : javaProjects.get(0);
+        if (javaProject == null)
+        {
+            Plugin.logError("Attempt to invoke SchemaTool but no JavaProject selected!");
+            return;
+        }
+
+        // Instantiate and initializes the wizard
+        SchemaToolWizard wizard = new SchemaToolWizard(javaProject);
+        if ((getSelection() instanceof IStructuredSelection) || (getSelection() == null))
+        {
+            wizard.init(getActivePart().getSite().getWorkbenchWindow().getWorkbench(), (IStructuredSelection) getSelection());
+        }
 
         // Instantiates the wizard container with the wizard and opens it
-        WizardDialog dialog = new WizardDialog(part.getSite().getShell(), wizard);
+        WizardDialog dialog = new WizardDialog(getActivePart().getSite().getShell(), wizard);
         dialog.create();
         dialog.open();
     }
-
-    /**
-     * @see IActionDelegate#selectionChanged(IAction, ISelection)
-     */
-    public void selectionChanged(IAction action, ISelection selection)
-    {
-        lastSelection = selection;
-        if (lastSelection == null)
-        {
-            return;
-        }
-        if (!(lastSelection instanceof StructuredSelection))
-        {
-            return;
-        }
-        StructuredSelection ss = (StructuredSelection) lastSelection;
-        if (!(ss.getFirstElement() instanceof IJavaProject))
-        {
-            return;
-        }
-        IJavaProject javaProject = (IJavaProject) ss.getFirstElement();
-        IProject project = javaProject.getProject();
-        try
-        {
-            action.setEnabled(project.hasNature(ProjectNature.NATURE));
-        }
-        catch (CoreException e)
-        {
-        }
-    }
-
 }
