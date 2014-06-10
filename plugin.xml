@@ -114,7 +114,7 @@
                 <separator name="group"/>
             </menu>
             <action label="Create Application ID Inner Class" id="datanucleus-eclipse.contribution.file.actions.createinner"
-               class="org.datanucleus.ide.eclipse.popup.actions.CreateAppId" menubarPath="datanucleus-eclipse.contribution.file.menu/group"/>
+               class="org.datanucleus.ide.eclipse.popup.actions.CreateAppIdAction" menubarPath="datanucleus-eclipse.contribution.file.menu/group"/>
         </objectContribution>
 
         <!-- Create PK, and Create XML metadata popup menu -->
@@ -126,7 +126,7 @@
                 <separator name="group"/>
             </menu>
             <action label="Create Application ID Inner Class" id="datanucleus-eclipse.contribution.compilation.actions.createinner"
-               class="org.datanucleus.ide.eclipse.popup.actions.CreateAppId" menubarPath="datanucleus-eclipse.contribution.compilation.menu/group"/>
+               class="org.datanucleus.ide.eclipse.popup.actions.CreateAppIdAction" menubarPath="datanucleus-eclipse.contribution.compilation.menu/group"/>
             <action label="Create JDO XML Metadata File" id="datanucleus-eclipse.contribution.compilation.actions.createmetadata"
                class="org.datanucleus.ide.eclipse.popup.actions.CreateMetadataAction" menubarPath="datanucleus-eclipse.contribution.compilation.menu/group"/>
         </objectContribution>

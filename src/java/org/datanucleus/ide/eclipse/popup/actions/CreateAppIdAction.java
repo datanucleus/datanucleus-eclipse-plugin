@@ -1,5 +1,5 @@
 /**********************************************************************
-Copyright (c) 2005 Michael Grundmann and others. All rights reserved.
+Copyright (c) 2004 Erik Bengtson and others. All rights reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -17,29 +17,39 @@ Contributors:
 **********************************************************************/
 package org.datanucleus.ide.eclipse.popup.actions;
 
-import org.datanucleus.ide.eclipse.wizard.createmetadata.MetadataCreationWizard;
+import org.datanucleus.ide.eclipse.wizard.createappid.JDOApplicationIdWizard;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.ui.IActionDelegate;
 
 /**
- * Action to create a JDO package.jdo file.
+ * Action to create an internal PK class for a persistable class.
  */
-public class CreateMetadataAction extends JavaProjectAction
+public class CreateAppIdAction extends JavaProjectAction
 {
-    /*
-     * (non-Javadoc)
-     * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
+    /**
+     * Constructor for SchemaToolAction.
+     */
+    public CreateAppIdAction()
+    {
+        super();
+    }
+
+    /**
+     * @see IActionDelegate#run(IAction)
      */
     public void run(IAction action)
     {
         // Instantiates and initializes the wizard
-        MetadataCreationWizard wizard = new MetadataCreationWizard();
+        JDOApplicationIdWizard wizard = new JDOApplicationIdWizard();
         ISelection selection = getSelection();
         if ((selection instanceof IStructuredSelection) || (selection == null))
-        wizard.init(getActivePart().getSite().getWorkbenchWindow().getWorkbench(), (IStructuredSelection)selection);
-            
+        {
+            wizard.init(getActivePart().getSite().getWorkbenchWindow().getWorkbench(), (IStructuredSelection) selection);
+        }
+
         // Instantiates the wizard container with the wizard and opens it
         WizardDialog dialog = new WizardDialog(getActivePart().getSite().getShell(), wizard);
         dialog.create();
