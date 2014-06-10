@@ -1,10 +1,19 @@
 /**********************************************************************
- Copyright (c) Sep 4, 2004 Erik Bengtson and others.
- All rights reserved. This program and the accompanying materials
- are made available under the terms of the JPOX License v1.0
- which accompanies this distribution. 
+Copyright (c) 2004 Erik Bengtson and others. All rights reserved
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
- Contributors:
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Contributors:
+2014 Andy Jefferson - added hashCode method, and cleaned up
  ...
  **********************************************************************/
 package org.datanucleus.ide.eclipse.wizard.createappid;
@@ -16,8 +25,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
 
 /**
- * @author erik
- * @version $Revision: 1.1 $
+ * Convenience methods to generate an application id PK class.
  */
 public class CodeGenerationUtil
 {
@@ -106,6 +114,56 @@ public class CodeGenerationUtil
             char c = typeSignature.charAt(0);
             return (c == Signature.C_BOOLEAN || c == Signature.C_BYTE || c == Signature.C_CHAR || c == Signature.C_DOUBLE || c == Signature.C_FLOAT || c == Signature.C_INT || c == Signature.C_LONG || c == Signature.C_SHORT);
         }
+    }
+
+    public static String createHashcodeMethod(String className, IType type) throws JavaModelException
+    {
+        StringBuffer buf = new StringBuffer();
+
+        buf.append("public int hashCode()\n{\n").append("    return ");
+
+        IField[] fields = type.getFields();
+        for (int i = 0; i < fields.length; i++)
+        {
+            if (i > 0)
+            {
+                buf.append(" ^ ");
+            }
+            IField f = fields[i];
+            String fname = f.getElementName();
+            String fsig = f.getTypeSignature();
+            int dims = Signature.getArrayCount(fsig);
+            if (!Flags.isStatic(f.getFlags()) && (dims < 2))
+            {
+                String elsig = Signature.getElementType(fsig);
+                if (elsig.length() > 1)
+                {
+                    // Object
+                    buf.append("this." + fname + ".hashCode()");
+                }
+                else
+                {
+                    // Primitive
+                    char c = elsig.charAt(0);
+                    if (c == Signature.C_LONG || c == Signature.C_DOUBLE || c == Signature.C_FLOAT)
+                    {
+                        buf.append("(int)this." + fname);
+                    }
+                    else if (c == Signature.C_INT || c == Signature.C_CHAR || c == Signature.C_SHORT || c == Signature.C_BYTE)
+                    {
+                        buf.append("this." + fname);
+                    }
+                    else
+                    {
+                        // Just handle BOOLEAN like this even though it will fail
+                        buf.append("this." + fname);
+                    }
+                }
+            }
+        }
+
+        buf.append(";\n").append("}");
+        return buf.toString();
     }
 
     /**

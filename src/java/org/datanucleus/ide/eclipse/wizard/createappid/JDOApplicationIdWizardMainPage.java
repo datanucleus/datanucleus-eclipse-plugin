@@ -1,13 +1,22 @@
 /**********************************************************************
- Copyright (c) 2004 Erik Bengtson and others.
- All rights reserved. This program and the accompanying materials
- are made available under the terms of the JPOX License v1.0
- which accompanies this distribution. 
+Copyright (c) 2004 Erik Bengtson and others. All rights reserved
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
- Contributors:
- Michael Grundmann  -  Removed dependencies to JDT internal classes. 
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Contributors:
+2004 Michael Grundmann - removed JDT code
+2014 Andy Jefferson - added hashCode method, and cleaned up
  ...
- **********************************************************************/
+**********************************************************************/
 package org.datanucleus.ide.eclipse.wizard.createappid;
 
 import java.util.ArrayList;
@@ -36,10 +45,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
-
 /**
  * Main Page for the generation of application id primary key classes.
- * @version $Revision: 1.1 $
  */
 public class JDOApplicationIdWizardMainPage extends NewTypeWizardPage
 {
@@ -214,6 +221,7 @@ public class JDOApplicationIdWizardMainPage extends NewTypeWizardPage
         method = method + " } ";
         newType.createMethod(method, null, false, null);
         newType.createMethod(CodeGenerationUtil.createEqualsMethod(newType.getElementName(), newType), null, false, null);
+        newType.createMethod(CodeGenerationUtil.createHashcodeMethod(newType.getElementName(), newType), null, false, null);
     }
 
     /**

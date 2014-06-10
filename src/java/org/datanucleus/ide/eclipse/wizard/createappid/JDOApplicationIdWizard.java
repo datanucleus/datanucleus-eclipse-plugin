@@ -23,7 +23,6 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 
 /**
  * Wizard for the generation of application id primary key classes.
- * @version $Revision: 1.1 $
  */
 public class JDOApplicationIdWizard extends Wizard implements INewWizard
 {
