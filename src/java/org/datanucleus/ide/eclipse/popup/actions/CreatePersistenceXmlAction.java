@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.datanucleus.ide.eclipse.Plugin;
 import org.datanucleus.ide.eclipse.jobs.LaunchUtilities;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -37,45 +38,34 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
-
 /**
  * Action to create a persistence.xml file for persistent classes in the project.
  */
-public class CreatePersistenceXmlAction implements IObjectActionDelegate
+public class CreatePersistenceXmlAction extends JavaProjectAction
 {
-    private ISelection lastSelection;
-
-    /*
-     * (non-Javadoc)
-     * @see org.eclipse.ui.IObjectActionDelegate#setActivePart(org.eclipse.jface.action.IAction,
-     * org.eclipse.ui.IWorkbenchPart)
-     */
-    public void setActivePart(IAction action, IWorkbenchPart targetPart)
-    {
-    }
-
     /*
      * (non-Javadoc)
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
     public void run(IAction action)
     {
-        if (lastSelection != null && lastSelection.isEmpty() == false && lastSelection instanceof IStructuredSelection)
+        ISelection selection = getSelection();
+        if (selection != null && selection.isEmpty() == false && selection instanceof IStructuredSelection)
         {
-            IStructuredSelection ssel = (IStructuredSelection) lastSelection;
+            IStructuredSelection ssel = (IStructuredSelection)selection;
             if (ssel.size() > 1)
             {
                 // More than 1 selection?
                 return;
             }
 
+            // We only know where to create a persistence.xml if we can navigate to a IPackageFragment.
+            // The top level of a project is an IProject and we don't support that.
             Object obj = ssel.getFirstElement();
             IPackageFragment pkg = null;
             if (obj instanceof IJavaElement)
@@ -93,77 +83,80 @@ public class CreatePersistenceXmlAction implements IObjectActionDelegate
                 }
             }
 
-            if (pkg != null)
+            if (pkg == null)
             {
-                // Find root of package structure
-                boolean moreLevels = true;
-                IJavaElement root = pkg;
-                while (moreLevels)
+                Plugin.log("Element " + obj + " not suitable for persistence.xml option. Select a source folder", null);
+                return;
+            }
+
+            // Find root of package structure
+            boolean moreLevels = true;
+            IJavaElement root = pkg;
+            while (moreLevels)
+            {
+                IJavaElement parent = pkg.getParent();
+                if (parent != null && parent instanceof IPackageFragment)
                 {
-                    IJavaElement parent = pkg.getParent();
-                    if (parent != null && parent instanceof IPackageFragment)
+                    pkg = (IPackageFragment)parent;
+                }
+                else if (parent != null && !(parent instanceof IPackageFragment))
+                {
+                    // First non-package level, hence the root
+                    moreLevels = false;
+                    root = parent;
+                }
+                else
+                {
+                    moreLevels = false;
+                }
+            }
+
+            try
+            {
+                IResource resource = root.getCorrespondingResource();
+                IContainer container = (IContainer) resource;
+                try
+                {
+                    // Make sure META-INF exists
+                    IFolder metaInfDir = container.getFolder(new Path("META-INF"));
+                    if (!metaInfDir.exists())
                     {
-                        pkg = (IPackageFragment)parent;
+                        metaInfDir.create(true, true, null);
                     }
-                    else if (parent != null && !(parent instanceof IPackageFragment))
+
+                    // Create persistence.xml with the desired contents
+                    final IFile file = metaInfDir.getFile(new Path("persistence.xml"));
+                    String contents = getContents(pkg);
+                    InputStream stream = new ByteArrayInputStream(contents.toString().getBytes());
+                    if (file.exists())
                     {
-                        // First non-package level, hence the root
-                        moreLevels = false;
-                        root = parent;
+                        file.setContents(stream, true, true, null);
                     }
                     else
                     {
-                        moreLevels = false;
+                        file.create(stream, true, null);
                     }
-                }
+                    stream.close();
 
-                try
-                {
-                    IResource resource = root.getCorrespondingResource();
-                    IContainer container = (IContainer) resource;
+                    IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
                     try
                     {
-                        // Make sure META-INF exists
-                        IFolder metaInfDir = container.getFolder(new Path("META-INF"));
-                        if (!metaInfDir.exists())
-                        {
-                            metaInfDir.create(true, true, null);
-                        }
-
-                        // Create persistence.xml with the desired contents
-                        final IFile file = metaInfDir.getFile(new Path("persistence.xml"));
-                        String contents = getContents(pkg);
-                        InputStream stream = new ByteArrayInputStream(contents.toString().getBytes());
-                        if (file.exists())
-                        {
-                            file.setContents(stream, true, true, null);
-                        }
-                        else
-                        {
-                            file.create(stream, true, null);
-                        }
-                        stream.close();
-
-                        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-                        try
-                        {
-                            IDE.openEditor(page, file, true);
-                        }
-                        catch (PartInitException e)
-                        {
-                        }
+                        IDE.openEditor(page, file, true);
                     }
-                    catch (CoreException e)
-                    {
-                    }
-                    catch (IOException e)
+                    catch (PartInitException e)
                     {
                     }
                 }
-                catch (JavaModelException jme)
+                catch (CoreException e)
                 {
-                    
                 }
+                catch (IOException e)
+                {
+                }
+            }
+            catch (JavaModelException jme)
+            {
+
             }
         }
     }
@@ -201,15 +194,5 @@ public class CreatePersistenceXmlAction implements IObjectActionDelegate
         str.append(indent).append("</persistence-unit>\n");
         str.append("</persistence>\n");
         return str.toString();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction,
-     * org.eclipse.jface.viewers.ISelection)
-     */
-    public void selectionChanged(IAction action, ISelection selection)
-    {
-        lastSelection = selection;
     }
 }

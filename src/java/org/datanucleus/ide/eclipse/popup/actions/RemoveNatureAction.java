@@ -15,18 +15,16 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.IAction;
 
-
 /**
- * @author erik
- * @author Marco หงุ่ยตระกูล-Schulze - marco at codewizards dot co
- * @version $Revision: 1.2 $
+ * Action performed from the popup menu item "Add DataNucleus Nature".
  */
 public class RemoveNatureAction extends JavaProjectAction
 {
     @Override
     public void run(IAction action)
     {
-        for (IJavaProject javaProject : getSelectedJavaProjects()) {
+        for (IJavaProject javaProject : getSelectedJavaProjects()) 
+        {
             IProject project = javaProject.getProject();
             ProjectHelper.removeNature(project, ProjectNature.NATURE);
         }

@@ -16,21 +16,20 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 
-
 /**
- * @author Michael Grundmann
- * @author Marco หงุ่ยตระกูล-Schulze - marco at codewizards dot co
- * @version $Revision: 1.3 $
+ * Action performed from the popup menu option for enabling auto-enhancement.
  */
 public class AutoEnhancementAction extends JavaProjectAction
 {
     @Override
     public void run(IAction action)
     {
-        for (IJavaProject javaProject : getSelectedJavaProjects()) {
+        for (IJavaProject javaProject : getSelectedJavaProjects()) 
+        {
             IProject project = javaProject.getProject();
 
-            if (ProjectHelper.hasNature(project)) {
+            if (ProjectHelper.hasNature(project)) 
+            {
                 boolean builderFound = ProjectHelper.getBuilderExistence(project, ProjectNature.BUILDER);
 
                 if (!builderFound)
@@ -50,7 +49,8 @@ public class AutoEnhancementAction extends JavaProjectAction
     {
         super.selectionChanged(action, selection);
 
-        for (IJavaProject javaProject : getSelectedJavaProjects()) {
+        for (IJavaProject javaProject : getSelectedJavaProjects()) 
+        {
             IProject project = javaProject.getProject();
 
             // Workaround for issue #IDE-22
