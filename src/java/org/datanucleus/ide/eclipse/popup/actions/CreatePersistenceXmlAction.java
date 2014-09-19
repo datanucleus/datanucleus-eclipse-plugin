@@ -174,7 +174,7 @@ public class CreatePersistenceXmlAction extends JavaProjectAction
         str.append(indent).append("<persistence-unit name=\"TEST\">\n");
 
         // <mapping-file> for each jdo file
-        List argsList = new ArrayList();
+        List<String> argsList = new ArrayList<String>();
         LaunchUtilities.getInputFiles(argsList, pkg.getResource(), pkg.getJavaProject(), 
             new String[] {"jdo"}, false);
         for (int i = 0; i < argsList.size(); i++)
