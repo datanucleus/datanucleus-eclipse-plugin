@@ -35,6 +35,7 @@ import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaProject;
 
@@ -65,9 +66,15 @@ public class EnhancerJob extends WorkspaceJob
         boolean captureOutput = ProjectHelper.getBooleanPreferenceValue(javaProject.getProject(), EnhancerPreferencePage.PAGE_ID,
                 PreferenceConstants.ENHANCER_CAPTURE_OUTPUT);
         LaunchUtilities.launch(javaProject, NAME, MAINCLASS, classpath, vmArgs, workingDir, programArgs, MAINCLASS, captureOutput);
+        refreshProjectResources();
         return Status.OK_STATUS;
     }
 
+    private void refreshProjectResources() throws CoreException 
+    {
+        javaProject.getProject().refreshLocal(IResource.DEPTH_INFINITE, new NullProgressMonitor());    	
+    }
+    
     private static String getProgramArguments(IResource resource, IJavaProject javaProject)
     {
         StringBuilder args = new StringBuilder();
