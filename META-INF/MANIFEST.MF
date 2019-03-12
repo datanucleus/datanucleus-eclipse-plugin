@@ -29,3 +29,4 @@ Export-Package: org.datanucleus.ide.eclipse,
  org.datanucleus.ide.eclipse.wizard.createappid,
  org.datanucleus.ide.eclipse.wizard.createmetadata,
  org.datanucleus.ide.eclipse.wizard.schematool
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
