@@ -158,18 +158,18 @@ public class SchemaToolJob extends Job implements IDebugEventSetListener
         if (propertiesFilename == null || (propertiesFilename != null && propertiesFilename.trim().length() <= 0))
         {
             // Add on the args for the connection to the datastore
-            args.append(" -Djavax.jdo.option.ConnectionDriverName=\"");
+            args.append(" -Ddatanucleus.ConnectionDriverName=\"");
             args.append(model.getConnectionDriverName());
             args.append("\"");
 
-            args.append(" -Djavax.jdo.option.ConnectionURL=\"");
+            args.append(" -Ddatanucleus.ConnectionURL=\"");
             args.append(model.getConnectionURL());
             args.append("\"");
 
-            args.append(" -Djavax.jdo.option.ConnectionUserName=");
+            args.append(" -Ddatanucleus.ConnectionUserName=");
             args.append(model.getUser());
 
-            args.append(" -Djavax.jdo.option.ConnectionPassword=");
+            args.append(" -Ddatanucleus.ConnectionPassword=");
             args.append(model.getPassword());
         }
 

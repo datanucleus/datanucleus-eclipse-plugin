@@ -2,7 +2,7 @@
 <feature
       id="org.datanucleus.ide.eclipse.feature"
       label="DataNucleus Eclipse Plugins"
-      version="4.0.1"
+      version="5.0.0"
       provider-name="DataNucleus">
 
    <description url="http://www.datanucleus.org/guides/eclipse/index.html">
