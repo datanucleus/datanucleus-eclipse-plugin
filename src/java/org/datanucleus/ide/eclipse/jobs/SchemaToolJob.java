@@ -154,23 +154,29 @@ public class SchemaToolJob extends Job implements IDebugEventSetListener
     {
         StringBuffer args = new StringBuffer(LaunchUtilities.getDefaultVMArguments(javaProject.getProject()));
 
-        String propertiesFilename = model.getPropertiesFileName();
-        if (propertiesFilename == null || (propertiesFilename != null && propertiesFilename.trim().length() <= 0))
+        String persistenceUnit = model.getPersistenceUnit();
+        persistenceUnit = ProjectHelper.getStringPreferenceValue(resource, SchemaToolPreferencePage.PAGE_ID,
+                PreferenceConstants.SCHEMATOOL_PERSISTENCE_UNIT);
+        if (persistenceUnit == null || persistenceUnit.trim().length() == 0)
         {
-            // Add on the args for the connection to the datastore
-            args.append(" -Ddatanucleus.ConnectionDriverName=\"");
-            args.append(model.getConnectionDriverName());
-            args.append("\"");
+            String propertiesFilename = model.getPropertiesFileName();
+            if (propertiesFilename == null || (propertiesFilename != null && propertiesFilename.trim().length() <= 0))
+            {
+                // Add on the args for the connection to the datastore
+                args.append(" -Ddatanucleus.ConnectionDriverName=\"");
+                args.append(model.getConnectionDriverName());
+                args.append("\"");
 
-            args.append(" -Ddatanucleus.ConnectionURL=\"");
-            args.append(model.getConnectionURL());
-            args.append("\"");
+                args.append(" -Ddatanucleus.ConnectionURL=\"");
+                args.append(model.getConnectionURL());
+                args.append("\"");
 
-            args.append(" -Ddatanucleus.ConnectionUserName=");
-            args.append(model.getUser());
+                args.append(" -Ddatanucleus.ConnectionUserName=");
+                args.append(model.getUser());
 
-            args.append(" -Ddatanucleus.ConnectionPassword=");
-            args.append(model.getPassword());
+                args.append(" -Ddatanucleus.ConnectionPassword=");
+                args.append(model.getPassword());
+            }
         }
 
         // Get any additional arguments from the wizard
