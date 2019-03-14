@@ -27,6 +27,7 @@ import java.util.jar.JarFile;
 
 import org.datanucleus.ide.eclipse.Localiser;
 import org.datanucleus.ide.eclipse.Plugin;
+import org.datanucleus.ide.eclipse.wizard.schematool.SchemaToolPropertyInputDialog;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -39,6 +40,8 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -53,6 +56,9 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IWorkbench;
@@ -76,20 +82,20 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
 
     private SelectionListener selectionListener = createSelectionListener();
 
-    /** Text field where the DB driver name is input. */
-    private Combo driverNameText;
-
     /** Text field for the driver jar. */
     private Text driverJarText;
 
+    /** Text field where the DB driver name is input. */
+    private Combo connectionDriverText;
+
     /** Text field where the DB URL is input. */
-    private Combo urlText;
+    private Combo connectionUrlText;
 
     /** Text field where the DB username is input. */
-    private Text usernameText;
+    private Text connectionUsernameText;
 
     /** Text field where the DB password is input. */
-    private Text passwordText;
+    private Text connectionPasswordText;
 
     /** Text widget storing the properties file name. */
     private Text propertiesFileText;
@@ -102,6 +108,18 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
 
     /** Button containing whether to run the SchemaTool in verbose mode or not. */
     private Button verboseModeCheckButton;
+
+    private Button ddlOutputCheckButton;
+
+    private Text ddlFileNameText;
+
+    private Button ddlFileNameBrowseButton;
+
+    /*private Table vmArgsTable;
+
+    private Button vmArgsAddButton;
+
+    private Button vmArgsRemoveButton;*/
 
     private IDialogSettings dialogSettings = Plugin.getDefault().getDialogSettings();
 
@@ -135,7 +153,8 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
 
         GridLayout layout = new GridLayout();
         layout.numColumns = 2;
-        layout.marginWidth = layout.marginHeight = 10;
+        layout.marginWidth = 10;
+        layout.marginHeight = 10;
         layout.horizontalSpacing = 10;
         filesGroup.setLayout(layout);
 
@@ -162,14 +181,6 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
         fileExtensionsRemoveButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         fileExtensionsRemoveButton.addSelectionListener(selectionListener);
 
-        // Verbose
-        verboseModeCheckButton = new Button(composite, SWT.CHECK);
-        verboseModeCheckButton.setText(Localiser.getString("SchemaToolPreferences.Verbose.Label"));
-        gd = new GridData(SWT.FILL, SWT.NULL, true, false, 2, 1);
-        gd.horizontalSpan = 2;
-        verboseModeCheckButton.setLayoutData(gd);
-        verboseModeCheckButton.setToolTipText(Localiser.getString("SchemaToolPreferences.Verbose.Tooltip"));
-
         // Persistence Unit
         Label persistenceUnitLabel = new Label(composite, SWT.NULL);
         persistenceUnitLabel.setText(Localiser.getString("SchemaToolPreferences.PersistenceUnit.Label"));
@@ -189,7 +200,7 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
 
         GridLayout datastoreLayout = new GridLayout();
         datastoreLayout.numColumns = 3;
-        datastoreLayout.marginWidth = layout.marginHeight = 10;
+        datastoreLayout.marginWidth = 10;
         datastoreLayout.horizontalSpacing = 10;
         datastoreGroup.setLayout(datastoreLayout);
 
@@ -233,7 +244,7 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
                 URLClassLoader loader = new URLClassLoader(urls);
                 try
                 {
-                    driverNameText.removeAll();
+                    connectionDriverText.removeAll();
                     for (int i = 0; i < results.length; i++)
                     {
                         try
@@ -266,7 +277,7 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
                                             {
                                                 if (interfaces[j].getName().equals("java.sql.Driver"))
                                                 {
-                                                    driverNameText.add(cls.getName());
+                                                    connectionDriverText.add(cls.getName());
                                                 }
                                             }
                                         }
@@ -311,54 +322,54 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
         // b). Database driver name
         Label driverNameLabel = new Label(datastoreGroup, SWT.NONE);
         driverNameLabel.setText(Localiser.getString("SchemaToolPreferences.DriverName.Label"));
-        driverNameText = new Combo(datastoreGroup, SWT.NONE);
-        driverNameText.setToolTipText(Localiser.getString("SchemaToolPreferences.DriverName.Tooltip"));
-        driverNameText.addModifyListener(new ModifyListener()
+        connectionDriverText = new Combo(datastoreGroup, SWT.NONE);
+        connectionDriverText.setToolTipText(Localiser.getString("SchemaToolPreferences.DriverName.Tooltip"));
+        connectionDriverText.addModifyListener(new ModifyListener()
         {
             public void modifyText(ModifyEvent e)
             {
-                String template = getUrlTemplate(driverNameText.getText());
+                String template = getUrlTemplate(connectionDriverText.getText());
                 if (template != null)
                 {
-                    urlText.setText(template);
+                    connectionUrlText.setText(template);
                 }
             }
         });
         gd = new GridData(GridData.FILL_HORIZONTAL);
         gd.horizontalSpan = 2;
         gd.widthHint = 150;
-        driverNameText.setLayoutData(gd);
+        connectionDriverText.setLayoutData(gd);
 
         // c). Database URL
         Label urlLabel = new Label(datastoreGroup, SWT.NONE);
         urlLabel.setText(Localiser.getString("SchemaToolPreferences.ConnectionURL.Label"));
-        urlText = new Combo(datastoreGroup, SWT.NONE);
-        urlText.setToolTipText(Localiser.getString("SchemaToolPreferences.ConnectionURL.Tooltip"));
+        connectionUrlText = new Combo(datastoreGroup, SWT.NONE);
+        connectionUrlText.setToolTipText(Localiser.getString("SchemaToolPreferences.ConnectionURL.Tooltip"));
         gd = new GridData(GridData.FILL_HORIZONTAL);
         gd.horizontalSpan = 2;
         gd.widthHint = 150;
-        urlText.setLayoutData(gd);
+        connectionUrlText.setLayoutData(gd);
 
         // d). Database Username
         Label usernameLabel = new Label(datastoreGroup, SWT.NONE);
         usernameLabel.setText(Localiser.getString("SchemaToolPreferences.UserName.Label"));
-        usernameText = new Text(datastoreGroup, SWT.BORDER);
-        usernameText.setToolTipText(Localiser.getString("SchemaToolPreferences.UserName.Tooltip"));
+        connectionUsernameText = new Text(datastoreGroup, SWT.BORDER);
+        connectionUsernameText.setToolTipText(Localiser.getString("SchemaToolPreferences.UserName.Tooltip"));
         gd = new GridData(GridData.FILL_HORIZONTAL);
         gd.horizontalSpan = 2;
         gd.widthHint = 100;
-        usernameText.setLayoutData(gd);
+        connectionUsernameText.setLayoutData(gd);
 
         // e). Database Password
         Label passwordLabel = new Label(datastoreGroup, SWT.NONE);
         passwordLabel.setText(Localiser.getString("SchemaToolPreferences.Password.Label"));
-        passwordText = new Text(datastoreGroup, SWT.BORDER);
-        passwordText.setToolTipText(Localiser.getString("SchemaToolPreferences.Password.Tooltip"));
+        connectionPasswordText = new Text(datastoreGroup, SWT.BORDER);
+        connectionPasswordText.setToolTipText(Localiser.getString("SchemaToolPreferences.Password.Tooltip"));
         gd = new GridData(GridData.FILL_HORIZONTAL);
         gd.horizontalSpan = 2;
         gd.widthHint = 100;
-        passwordText.setLayoutData(gd);
-        passwordText.setEchoChar('*');
+        connectionPasswordText.setLayoutData(gd);
+        connectionPasswordText.setEchoChar('*');
 
         // f). Properties file
         Label propertiesFileLabel = new Label(datastoreGroup, SWT.NULL);
@@ -377,18 +388,18 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
                 if (propsFileName == null || propsFileName.trim().length() == 0)
                 {
                     driverJarText.setEnabled(true);
-                    driverNameText.setEnabled(true);
-                    urlText.setEnabled(true);
-                    usernameText.setEnabled(true);
-                    passwordText.setEnabled(true);
+                    connectionDriverText.setEnabled(true);
+                    connectionUrlText.setEnabled(true);
+                    connectionUsernameText.setEnabled(true);
+                    connectionPasswordText.setEnabled(true);
                 }
                 else
                 {
                     driverJarText.setEnabled(false);
-                    driverNameText.setEnabled(false);
-                    urlText.setEnabled(false);
-                    usernameText.setEnabled(false);
-                    passwordText.setEnabled(false);
+                    connectionDriverText.setEnabled(false);
+                    connectionUrlText.setEnabled(false);
+                    connectionUsernameText.setEnabled(false);
+                    connectionPasswordText.setEnabled(false);
                 }
             }
         });
@@ -397,6 +408,178 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
         propertiesFileBrowseButton.setText(Localiser.getString("SchemaToolPreferences.PropertiesFile.Browse.Label"));
         propertiesFileBrowseButton.addSelectionListener(selectionListener);
 
+        // Verbose
+        verboseModeCheckButton = new Button(composite, SWT.CHECK);
+        verboseModeCheckButton.setText(Localiser.getString("SchemaToolPreferences.Verbose.Label"));
+        gd = new GridData(SWT.FILL, SWT.NULL, true, false, 2, 1);
+        gd.horizontalSpan = 2;
+        verboseModeCheckButton.setLayoutData(gd);
+        verboseModeCheckButton.setToolTipText(Localiser.getString("SchemaToolPreferences.Verbose.Tooltip"));
+
+        // DDL output
+        Group ddlGroup = new Group(composite, SWT.NONE);
+        ddlGroup.setText(Localiser.getString("SchemaToolPanel_groupFileOutput"));
+        GridData ddlGroupGrid = new GridData(GridData.FILL_BOTH);
+        ddlGroupGrid.horizontalSpan = 2;
+        ddlGroup.setLayoutData(ddlGroupGrid);
+
+        GridLayout ddlLayout = new GridLayout();
+        int numColumns = 3;
+        ddlLayout.numColumns = numColumns;
+        ddlLayout.marginWidth = 10;
+        ddlLayout.horizontalSpacing = 20;
+        ddlGroup.setLayout(ddlLayout);
+
+        // Dump to DDL checkbox
+        ddlOutputCheckButton = new Button(ddlGroup, SWT.CHECK);
+        ddlOutputCheckButton.setSelection(false);
+        ddlOutputCheckButton.setText(Localiser.getString("SchemaToolPreferences.DumpDDL.Label"));
+        ddlOutputCheckButton.setToolTipText(Localiser.getString("SchemaToolPreferences.DumpDDL.Tooltip"));
+        GridData ddlGrid = new GridData(GridData.FILL_HORIZONTAL);
+        ddlGrid.horizontalSpan = numColumns;
+        ddlOutputCheckButton.setLayoutData(ddlGrid);
+        ddlOutputCheckButton.addSelectionListener(new SelectionAdapter()
+        {
+        	public void widgetSelected(SelectionEvent e)
+        	{
+        		boolean selection = ddlOutputCheckButton.getSelection();
+        		ddlFileNameText.setEnabled(selection);
+        		ddlFileNameBrowseButton.setEnabled(selection);
+        	}
+        });
+
+        // DDL filename
+        Label fileNameLabel = new Label(ddlGroup, SWT.NONE);
+        fileNameLabel.setText(Localiser.getString("SchemaToolPreferences.DDLFile.Label"));
+
+        ddlFileNameText = new Text(ddlGroup, SWT.BORDER | SWT.SINGLE);
+        ddlGrid = new GridData(SWT.FILL, SWT.NULL, false, false);
+        ddlGrid.widthHint = 300;
+        ddlFileNameText.setLayoutData(ddlGrid);
+        ddlFileNameText.setToolTipText(Localiser.getString("SchemaToolPreferences.DDLFile.Tooltip"));
+
+        ddlFileNameBrowseButton = new Button(ddlGroup, SWT.PUSH);
+        ddlFileNameBrowseButton.setText(Localiser.getString("SchemaToolPreferences.DDLFile.Browse.Label"));
+        ddlFileNameBrowseButton.addSelectionListener(new SelectionAdapter()
+        {
+        	public void widgetSelected(SelectionEvent e)
+        	{
+        		IDialogSettings dialogSettings = Plugin.getDefault().getDialogSettings();
+        		String filetypeSuffix = ".lastddlfile";
+        		String lastUsedPath = dialogSettings.get(Plugin.ID + filetypeSuffix);
+        		if (lastUsedPath == null)
+        		{
+        			lastUsedPath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+        		}
+        		FileDialog dialog = new FileDialog(ddlFileNameText.getShell(), SWT.SINGLE);
+        		dialog.setFilterPath(lastUsedPath);
+        		String result = dialog.open();
+        		if (result == null)
+        		{
+        			return;
+        		}
+
+        		IPath filterPath = new Path(dialog.getFilterPath());
+        		String fileName = dialog.getFileName();
+        		IPath path = filterPath.append(fileName).makeAbsolute();
+        		ddlFileNameText.setText(path.toOSString());
+        		dialogSettings.put(Plugin.ID + filetypeSuffix, path.toOSString());
+        	}
+        });
+
+        // VM Arguments
+        /*Group vmArgsGroup = new Group(composite, SWT.NONE);
+        vmArgsGroup.setText(Localiser.getString("SchemaToolSettingsPanel_groupAdditionalVMArguments")); //$NON-NLS-1$
+        GridData vmArgsGridData = new GridData(SWT.FILL, SWT.NULL, true, false);
+        vmArgsGridData.horizontalSpan = 2;
+        vmArgsGroup.setLayoutData(vmArgsGridData);
+
+        GridLayout vmArgsLayout = new GridLayout();
+        vmArgsLayout.marginHeight = 10;
+        vmArgsGroup.setLayout(vmArgsLayout);
+
+        vmArgsTable = new Table(vmArgsGroup, SWT.BORDER | SWT.FULL_SELECTION);
+        vmArgsTable.setHeaderVisible(true);
+        vmArgsTable.setLinesVisible(true);
+        GridData vmArgsGrid = new GridData(SWT.FILL, SWT.NULL, true, false);
+        vmArgsGrid.heightHint = 100;
+        vmArgsTable.setLayoutData(vmArgsGrid);
+        vmArgsTable.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                vmArgsRemoveButton.setEnabled(vmArgsTable.getSelectionCount() > 0);
+            }
+        });
+        vmArgsTable.addMouseListener(new MouseAdapter()
+        {
+            public void mouseDoubleClick(MouseEvent e)
+            {
+                int index = vmArgsTable.getSelectionIndex();
+                TableItem item = vmArgsTable.getItem(index);
+                SchemaToolPropertyInputDialog dialog = new SchemaToolPropertyInputDialog(getShell(), Localiser.getString("SchemaToolSettingsPanel_labelEditVMArguments"), item.getText(0), item.getText(1)); //$NON-NLS-1$
+                dialog.open();
+
+                if (dialog.getProperty() != null && dialog.getValue() != null)
+                {
+                    if (dialog.getProperty().length() > 0 && dialog.getValue().length() > 0)
+                    {
+                        item.setText(0, dialog.getProperty());
+                        item.setText(1, dialog.getValue());
+                    }
+                }
+            }
+        });
+
+        TableColumn propertyColumn = new TableColumn(vmArgsTable, SWT.LEFT);
+        propertyColumn.setText(Localiser.getString("SchemaToolSettingsPanel_labelProperty")); //$NON-NLS-1$
+        propertyColumn.setWidth(200);
+
+        TableColumn valueColumn = new TableColumn(vmArgsTable, SWT.LEFT);
+        valueColumn.setText(Localiser.getString("SchemaToolSettingsPanel_labelValue")); //$NON-NLS-1$
+        valueColumn.setWidth(100);
+
+        Composite buttonComposite = new Composite(vmArgsGroup, SWT.NULL);
+        buttonComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+        GridLayout buttonCompositeLayout = new GridLayout();
+        buttonComposite.setLayout(buttonCompositeLayout);
+
+        vmArgsAddButton = new Button(buttonComposite, SWT.PUSH);
+        vmArgsAddButton.setText(Localiser.getString("SchemaToolSettingsPanel_labelAdd")); //$NON-NLS-1$
+        vmArgsAddButton.setLayoutData(new GridData(SWT.FILL, SWT.NULL, true, false));
+        vmArgsAddButton.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                SchemaToolPropertyInputDialog dialog = new SchemaToolPropertyInputDialog(getShell(), Localiser.getString("SchemaToolSettingsPanel_labelNewVMArgument"), null, null); //$NON-NLS-1$
+                dialog.open();
+
+                if (dialog.getProperty() != null && dialog.getValue() != null)
+                {
+                    TableItem item = new TableItem(vmArgsTable, SWT.NONE, vmArgsTable.getItemCount());
+                    if (dialog.getProperty().length() > 0 && dialog.getValue().length() > 0)
+                    {
+                        item.setText(0, dialog.getProperty());
+                        item.setText(1, dialog.getValue());
+                    }
+                }
+            }
+        });
+
+        vmArgsRemoveButton = new Button(buttonComposite, SWT.PUSH);
+        vmArgsRemoveButton.setText(Localiser.getString("SchemaToolSettingsPanel_labelRemove")); //$NON-NLS-1$
+        vmArgsRemoveButton.setLayoutData(new GridData(SWT.FILL, SWT.NULL, true, false));
+        vmArgsRemoveButton.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+            	vmArgsTable.remove(vmArgsTable.getSelectionIndex());
+            }
+        });
+        vmArgsRemoveButton.setEnabled(vmArgsTable.getSelectionCount() > 0);*/
+
+        // Initialise all widgets with initial values
         initControls();
 
         return composite;
@@ -510,14 +693,20 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
         String[] extensionEntries = extensions.split(System.getProperty("path.separator"));
         fileExtensionsList.setItems(extensionEntries);
 
-        driverNameText.setText(getPreferenceStore().getString(SCHEMATOOL_DATASTORE_DRIVERNAME));
+        connectionDriverText.setText(getPreferenceStore().getString(SCHEMATOOL_DATASTORE_DRIVERNAME));
         driverJarText.setText(getPreferenceStore().getString(SCHEMATOOL_DATASTORE_DRIVERJAR));
-        urlText.setText(getPreferenceStore().getString(SCHEMATOOL_DATASTORE_URL));
-        usernameText.setText(getPreferenceStore().getString(SCHEMATOOL_DATASTORE_USERNAME));
-        passwordText.setText(getPreferenceStore().getString(SCHEMATOOL_DATASTORE_PASSWORD));
+        connectionUrlText.setText(getPreferenceStore().getString(SCHEMATOOL_DATASTORE_URL));
+        connectionUsernameText.setText(getPreferenceStore().getString(SCHEMATOOL_DATASTORE_USERNAME));
+        connectionPasswordText.setText(getPreferenceStore().getString(SCHEMATOOL_DATASTORE_PASSWORD));
         propertiesFileText.setText(getPreferenceStore().getString(SCHEMATOOL_PROPERTIES_FILE));
         verboseModeCheckButton.setSelection(getPreferenceStore().getBoolean(SCHEMATOOL_VERBOSE_MODE));
         persistenceUnitText.setText(getPreferenceStore().getString(SCHEMATOOL_PERSISTENCE_UNIT));
+
+        ddlOutputCheckButton.setSelection(getPreferenceStore().getBoolean(SCHEMATOOL_DDL_OUTPUT));
+        ddlFileNameText.setText(getPreferenceStore().getString(SCHEMATOOL_DDL_FILENAME));
+        ddlFileNameText.setEnabled(getPreferenceStore().getBoolean(SCHEMATOOL_DDL_OUTPUT));
+
+        // TODO Add vmArgs
     }
 
     /*
@@ -527,14 +716,16 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
     public boolean performOk()
     {
         getPreferenceStore().setValue(SCHEMATOOL_INPUT_FILE_EXTENSIONS, getFileExtensions());
-        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_DRIVERNAME, driverNameText.getText());
+        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_DRIVERNAME, connectionDriverText.getText());
         getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_DRIVERJAR, driverJarText.getText());
-        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_URL, urlText.getText());
-        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_USERNAME, usernameText.getText());
-        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_PASSWORD, passwordText.getText());
+        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_URL, connectionUrlText.getText());
+        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_USERNAME, connectionUsernameText.getText());
+        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_PASSWORD, connectionPasswordText.getText());
         getPreferenceStore().setValue(SCHEMATOOL_PROPERTIES_FILE, propertiesFileText.getText());
         getPreferenceStore().setValue(SCHEMATOOL_VERBOSE_MODE, verboseModeCheckButton.getSelection());
         getPreferenceStore().setValue(SCHEMATOOL_PERSISTENCE_UNIT, persistenceUnitText.getText());
+        getPreferenceStore().setValue(SCHEMATOOL_DDL_OUTPUT, ddlOutputCheckButton.getSelection());
+        getPreferenceStore().setValue(SCHEMATOOL_DDL_FILENAME, ddlFileNameText.getText());
 
         return super.performOk();
     }

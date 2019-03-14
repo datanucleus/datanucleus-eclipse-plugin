@@ -72,7 +72,9 @@ public class SchemaToolMainPage extends WizardPage implements Listener
         control.getFileNameText().setText(model.getFileName());
 
         // compute enablement according to the state
-        control.computeEnablement();
+        boolean selection = control.getCheckboxButtonDumpToFile().getSelection();
+        control.getFileNameText().setEnabled(selection);
+        control.getFileNameBrowseButton().setEnabled(selection);
 
         setControl(control);
     }

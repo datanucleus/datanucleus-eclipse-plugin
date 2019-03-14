@@ -127,6 +127,16 @@ public class EnhancerPreferencePage extends PropertyAndPreferencePage implements
         fileExtensionsRemoveButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         fileExtensionsRemoveButton.addSelectionListener(selectionListener);
 
+        // Persistence Unit
+        Label persistenceUnitLabel = new Label(composite, SWT.NULL);
+        persistenceUnitLabel.setText(Localiser.getString("EnhancerPreferences.PersistenceUnit.Label"));
+
+        persistenceUnitText = new Text(composite, SWT.BORDER | SWT.SINGLE);
+        GridData persistenceUnitGrid = new GridData(SWT.FILL, SWT.NULL, false, false);
+        persistenceUnitGrid.widthHint = 50;
+        persistenceUnitText.setLayoutData(persistenceUnitGrid);
+        persistenceUnitText.setToolTipText(Localiser.getString("EnhancerPreferences.PersistenceUnit.Tooltip"));
+
         // Console
         captureOutputCheckButton = new Button(composite, SWT.CHECK);
         captureOutputCheckButton.setText(Localiser.getString("EnhancerPreferences.Capture.Output"));
@@ -144,16 +154,6 @@ public class EnhancerPreferencePage extends PropertyAndPreferencePage implements
         useFileListFileButton.setText(Localiser.getString("EnhancerPreferences.UseFileListFile.Label"));
         useFileListFileButton.setLayoutData(new GridData(SWT.FILL, SWT.NULL, true, false, 2, 1));
         useFileListFileButton.setToolTipText(Localiser.getString("EnhancerPreferences.UseFileListFile.Tooltip"));
-
-        // Persistence Unit
-        Label persistenceUnitLabel = new Label(composite, SWT.NULL);
-        persistenceUnitLabel.setText(Localiser.getString("EnhancerPreferences.PersistenceUnit.Label"));
-
-        persistenceUnitText = new Text(composite, SWT.BORDER | SWT.SINGLE);
-        GridData persistenceUnitGrid = new GridData(SWT.FILL, SWT.NULL, false, false);
-        persistenceUnitGrid.widthHint = 50;
-        persistenceUnitText.setLayoutData(persistenceUnitGrid);
-        persistenceUnitText.setToolTipText(Localiser.getString("EnhancerPreferences.PersistenceUnit.Tooltip"));
 
         initControls();
 

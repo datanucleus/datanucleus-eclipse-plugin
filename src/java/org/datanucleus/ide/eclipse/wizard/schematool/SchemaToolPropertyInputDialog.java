@@ -32,7 +32,7 @@ public class SchemaToolPropertyInputDialog extends Dialog
 
     private Text valueText;
 
-    protected SchemaToolPropertyInputDialog(Shell parentShell, String title, String initialProperty, String initialValue)
+    public SchemaToolPropertyInputDialog(Shell parentShell, String title, String initialProperty, String initialValue)
     {
         super(parentShell);
         this.title = title;

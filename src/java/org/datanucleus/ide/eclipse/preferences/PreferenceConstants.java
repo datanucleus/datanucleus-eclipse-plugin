@@ -43,18 +43,12 @@ public interface PreferenceConstants
 
     String ENHANCER_PERSISTENCE_UNIT = "enhancerPersistenceUnit";
 
-    /**
-     * Whether to use a file-list-file.
-     * <p>
-     * See: <a href="http://www.datanucleus.org/servlet/jira/browse/NUCACCECLIPSE-11">NUCACCECLIPSE-11</a>
-     */
+    /** Whether to use a file-list-file. */
     String ENHANCER_USE_FILE_LIST_FILE = "useFileListFile";
 
     /**
      * The default value for the setting {@link #ENHANCER_USE_FILE_LIST_FILE}.
-     * <p>
-     * This default value is <code>true</code> on Windows and <code>false</code> on all
-     * other systems (primarily GNU/Linux).
+     * This default value is <code>true</code> on Windows and <code>false</code> on all other systems (primarily GNU/Linux).
      */
     boolean ENHANCER_USE_FILE_LIST_FILE_DEFAULT_VALUE = File.separatorChar == '\\';
 
@@ -76,4 +70,7 @@ public interface PreferenceConstants
 
     String SCHEMATOOL_PERSISTENCE_UNIT = "schematoolPersistenceUnit";
 
+    String SCHEMATOOL_DDL_OUTPUT = "schematoolDdlOutput";
+
+    String SCHEMATOOL_DDL_FILENAME = "schematoolDdlFilename";
 }

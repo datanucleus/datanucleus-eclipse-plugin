@@ -8,6 +8,7 @@ KeyFacts
 --------
 __License__ : Apache 2 licensed  
 __Issue Tracker__ : https://github.com/datanucleus/datanucleus-eclipse-plugin/issues  
+__Download__ : http://www.datanucleus.org/downloads/eclipse-update/  
 
 
-To build a plugin, open up the `MANIFEST.MF` in Eclipse and select *Overview&. Then use the *Export Wizard*.
+To build a plugin, open up the `MANIFEST.MF` in Eclipse and select *Overview*. Then use the *Export Wizard*.

@@ -356,7 +356,26 @@ public class SchemaToolPanel extends Composite
         {
             public void widgetSelected(SelectionEvent e)
             {
-                handlePropertiesFilenameBrowse();
+                IDialogSettings dialogSettings = Plugin.getDefault().getDialogSettings();
+                String filetypeSuffix = ".lastpropsfile";
+                String lastUsedPath = dialogSettings.get(Plugin.ID + filetypeSuffix);
+                if (lastUsedPath == null)
+                {
+                    lastUsedPath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+                }
+                FileDialog dialog = new FileDialog(propertiesFileNameText.getShell(), SWT.SINGLE);
+                dialog.setFilterPath(lastUsedPath);
+                String result = dialog.open();
+                if (result == null)
+                {
+                    return;
+                }
+
+                IPath filterPath = new Path(dialog.getFilterPath());
+                String fileName = dialog.getFileName();
+                IPath path = filterPath.append(fileName).makeAbsolute();
+                propertiesFileNameText.setText(path.toOSString());
+                dialogSettings.put(Plugin.ID + filetypeSuffix, path.toOSString());
             }
         });
     }
@@ -386,7 +405,9 @@ public class SchemaToolPanel extends Composite
         {
             public void widgetSelected(SelectionEvent e)
             {
-                computeEnablement();
+                boolean selection = checkboxButtonDumpToFile.getSelection();
+                fileNameText.setEnabled(selection);
+                fileNameBrowseButton.setEnabled(selection);
             }
         });
 
@@ -406,64 +427,28 @@ public class SchemaToolPanel extends Composite
         {
             public void widgetSelected(SelectionEvent e)
             {
-                handleDdlFilenameBrowse();
+                IDialogSettings dialogSettings = Plugin.getDefault().getDialogSettings();
+                String filetypeSuffix = ".lastddlfile";
+                String lastUsedPath = dialogSettings.get(Plugin.ID + filetypeSuffix);
+                if (lastUsedPath == null)
+                {
+                    lastUsedPath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+                }
+                FileDialog dialog = new FileDialog(fileNameText.getShell(), SWT.SINGLE);
+                dialog.setFilterPath(lastUsedPath);
+                String result = dialog.open();
+                if (result == null)
+                {
+                    return;
+                }
+
+                IPath filterPath = new Path(dialog.getFilterPath());
+                String fileName = dialog.getFileName();
+                IPath path = filterPath.append(fileName).makeAbsolute();
+                fileNameText.setText(path.toOSString());
+                dialogSettings.put(Plugin.ID + filetypeSuffix, path.toOSString());
             }
         });
-    }
-
-    protected void computeEnablement()
-    {
-        boolean selection = checkboxButtonDumpToFile.getSelection();
-        fileNameText.setEnabled(selection);
-        fileNameBrowseButton.setEnabled(selection);
-    }
-
-    protected void handleDdlFilenameBrowse()
-    {
-        IDialogSettings dialogSettings = Plugin.getDefault().getDialogSettings();
-        String filetypeSuffix = ".lastddlfile";
-        String lastUsedPath = dialogSettings.get(Plugin.ID + filetypeSuffix);
-        if (lastUsedPath == null)
-        {
-            lastUsedPath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
-        }
-        FileDialog dialog = new FileDialog(fileNameText.getShell(), SWT.SINGLE);
-        dialog.setFilterPath(lastUsedPath);
-        String result = dialog.open();
-        if (result == null)
-        {
-            return;
-        }
-
-        IPath filterPath = new Path(dialog.getFilterPath());
-        String fileName = dialog.getFileName();
-        IPath path = filterPath.append(fileName).makeAbsolute();
-        fileNameText.setText(path.toOSString());
-        dialogSettings.put(Plugin.ID + filetypeSuffix, path.toOSString());
-    }
-
-    protected void handlePropertiesFilenameBrowse()
-    {
-        IDialogSettings dialogSettings = Plugin.getDefault().getDialogSettings();
-        String filetypeSuffix = ".lastpropsfile";
-        String lastUsedPath = dialogSettings.get(Plugin.ID + filetypeSuffix);
-        if (lastUsedPath == null)
-        {
-            lastUsedPath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
-        }
-        FileDialog dialog = new FileDialog(propertiesFileNameText.getShell(), SWT.SINGLE);
-        dialog.setFilterPath(lastUsedPath);
-        String result = dialog.open();
-        if (result == null)
-        {
-            return;
-        }
-
-        IPath filterPath = new Path(dialog.getFilterPath());
-        String fileName = dialog.getFileName();
-        IPath path = filterPath.append(fileName).makeAbsolute();
-        propertiesFileNameText.setText(path.toOSString());
-        dialogSettings.put(Plugin.ID + filetypeSuffix, path.toOSString());
     }
 
     public Button getCheckboxButtonDumpToFile()
@@ -479,6 +464,11 @@ public class SchemaToolPanel extends Composite
     public Text getFileNameText()
     {
         return fileNameText;
+    }
+
+    public Button getFileNameBrowseButton()
+    {
+        return fileNameBrowseButton;
     }
 
     public Text getPasswordText()

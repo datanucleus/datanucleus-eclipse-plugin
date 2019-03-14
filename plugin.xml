@@ -35,34 +35,32 @@
     </extension>
 
     <extension id="org.datanucleus.ide.eclipse.preferences" point="org.eclipse.ui.preferencePages">
-        <page class="org.datanucleus.ide.eclipse.preferences.GeneralPreferencePage"
-            id="org.datanucleus.ide.eclipse.preferences.general" name="%preferencesGeneral"/>
-        <page class="org.datanucleus.ide.eclipse.preferences.EnhancerPreferencePage" 
+        <page class="org.datanucleus.ide.eclipse.preferences.GeneralPreferencePage" name="DataNucleus"
+            id="org.datanucleus.ide.eclipse.preferences.general"/>
+        <page class="org.datanucleus.ide.eclipse.preferences.EnhancerPreferencePage" name="Enhancer"
             category="org.datanucleus.ide.eclipse.preferences.general"
-            id="org.datanucleus.ide.eclipse.preferences.enhancer" name="Enhancer"/>
-        <page class="org.datanucleus.ide.eclipse.preferences.SchemaToolPreferencePage"
+            id="org.datanucleus.ide.eclipse.preferences.enhancer"/>
+        <page class="org.datanucleus.ide.eclipse.preferences.SchemaToolPreferencePage" name="SchemaTool"
             category="org.datanucleus.ide.eclipse.preferences.general"
-            id="org.datanucleus.ide.eclipse.preferences.schematool" name="SchemaTool"/>
+            id="org.datanucleus.ide.eclipse.preferences.schematool"/>
     </extension>
 
     <extension id="org.datanucleus.ide.eclipse.properties" point="org.eclipse.ui.propertyPages">
-        <page adaptable="true" class="org.datanucleus.ide.eclipse.preferences.GeneralPreferencePage"
+        <page adaptable="true" class="org.datanucleus.ide.eclipse.preferences.GeneralPreferencePage" name="DataNucleus"
             id="org.datanucleus.ide.eclipse.properties.general"
-            name="%preferencesGeneral" objectClass="org.eclipse.core.resources.IProject"/>
-        <page adaptable="true" class="org.datanucleus.ide.eclipse.preferences.EnhancerPreferencePage"
+            objectClass="org.eclipse.core.resources.IProject"/>
+        <page adaptable="true" class="org.datanucleus.ide.eclipse.preferences.EnhancerPreferencePage" name="Enhancer"
             category="org.datanucleus.ide.eclipse.properties.general" id="org.datanucleus.ide.eclipse.properties.enhancer"
-            name="Enhancer" objectClass="org.eclipse.core.resources.IProject"/>
-        <page adaptable="true" class="org.datanucleus.ide.eclipse.preferences.SchemaToolPreferencePage"
+            objectClass="org.eclipse.core.resources.IProject"/>
+        <page adaptable="true" class="org.datanucleus.ide.eclipse.preferences.SchemaToolPreferencePage" name="SchemaTool"
             category="org.datanucleus.ide.eclipse.properties.general" id="org.datanucleus.ide.eclipse.properties.schematool"
-            name="SchemaTool" objectClass="org.eclipse.core.resources.IProject"/>
+            objectClass="org.eclipse.core.resources.IProject"/>
     </extension>
 
     <extension id="popups" name="DataNucleus Popups" point="org.eclipse.ui.popupMenus">
         <!-- Package Explorer / Project Explorer popup menu -->
         <!-- Note: 'objectClass="org.eclipse.jdt.core.IJavaProject"' does not work in Project Explorer! -->
-        <objectContribution id="datanucleus-eclipse.contribution.project.menu"
-            objectClass="org.eclipse.core.resources.IProject"
-            adaptable="true">
+        <objectContribution id="datanucleus-eclipse.contribution.project.menu" objectClass="org.eclipse.core.resources.IProject" adaptable="true">
             <menu label="DataNucleus" path="additions" id="datanucleus-eclipse.contribution.project.menu">
                 <separator name="enhancer"/>
                 <separator name="tools"/>
