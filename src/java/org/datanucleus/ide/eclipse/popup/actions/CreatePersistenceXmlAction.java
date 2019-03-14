@@ -165,9 +165,9 @@ public class CreatePersistenceXmlAction extends JavaProjectAction
     {
         StringBuffer str = new StringBuffer();
         str.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
-        str.append("<persistence xmlns=\"http://java.sun.com/xml/ns/persistence\"\n");
+        str.append("<persistence xmlns=\"http://xmlns.jcp.org/xml/ns/persistence\"\n");
         str.append("    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n");
-        str.append("    xsi:schemaLocation=\"http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd\" version=\"1.0\">\n");
+        str.append("    xsi:schemaLocation=\"http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd\" version=\"2.2\">\n");
         str.append("\n");
 
         String indent = "    ";
