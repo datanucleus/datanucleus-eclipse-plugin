@@ -119,6 +119,8 @@ public class SchemaToolWizard extends Wizard implements INewWizard
                 SchemaToolPreferencePage.PAGE_ID, PreferenceConstants.SCHEMATOOL_DATASTORE_DRIVERJAR));
             model.setPropertiesFileName(ProjectHelper.getStringPreferenceValue(resource,
                 SchemaToolPreferencePage.PAGE_ID, PreferenceConstants.SCHEMATOOL_PROPERTIES_FILE));
+            model.setPersistenceUnit(ProjectHelper.getStringPreferenceValue(resource,
+                SchemaToolPreferencePage.PAGE_ID, PreferenceConstants.SCHEMATOOL_PERSISTENCE_UNIT));
         }
 
         // Only available from wizard
