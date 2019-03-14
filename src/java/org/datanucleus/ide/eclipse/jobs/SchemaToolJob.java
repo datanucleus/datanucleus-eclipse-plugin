@@ -157,7 +157,7 @@ public class SchemaToolJob extends Job implements IDebugEventSetListener
         String persistenceUnit = model.getPersistenceUnit();
         persistenceUnit = ProjectHelper.getStringPreferenceValue(resource, SchemaToolPreferencePage.PAGE_ID,
                 PreferenceConstants.SCHEMATOOL_PERSISTENCE_UNIT);
-        if (persistenceUnit == null || persistenceUnit.trim().length() == 0)
+        if ( persistenceUnit == null || persistenceUnit.trim().length() <= 0 || model.getConnectionURL().trim().length() > 0 )
         {
             String propertiesFilename = model.getPropertiesFileName();
             if (propertiesFilename == null || (propertiesFilename != null && propertiesFilename.trim().length() <= 0))
