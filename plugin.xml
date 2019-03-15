@@ -78,6 +78,8 @@
                class="org.datanucleus.ide.eclipse.popup.actions.AutoEnhancementAction" menubarPath="datanucleus-eclipse.contribution.project.menu/enhancer" style="toggle"/>
             <action label="%actionSchemaTool" id="datanucleus-eclipse.contribution.project.actions.schematool"
                class="org.datanucleus.ide.eclipse.popup.actions.SchemaToolAction" menubarPath="datanucleus-eclipse.contribution.project.menu/tools"/>
+            <action label="%actionSchemaToolCreate" id="datanucleus-eclipse.contribution.project.actions.schematool-create"
+               class="org.datanucleus.ide.eclipse.popup.actions.SchemaToolCreateAction" menubarPath="datanucleus-eclipse.contribution.project.menu/tools"/>
             <action label="%actionEnhancerTool" id="datanucleus-eclipse.contribution.project.actions.enhancertool"
                class="org.datanucleus.ide.eclipse.popup.actions.EnhancerToolAction" menubarPath="datanucleus-eclipse.contribution.project.menu/tools"/>
         </objectContribution>

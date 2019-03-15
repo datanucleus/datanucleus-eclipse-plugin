@@ -624,18 +624,18 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
      */
     public boolean performOk()
     {
-        getPreferenceStore().setValue(SCHEMATOOL_INPUT_FILE_EXTENSIONS, getFileExtensions());
-        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_DRIVERNAME, connectionDriverText.getText());
-        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_DRIVERJAR, driverJarText.getText());
-        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_URL, connectionUrlText.getText());
-        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_USERNAME, connectionUsernameText.getText());
-        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_PASSWORD, connectionPasswordText.getText());
-        getPreferenceStore().setValue(SCHEMATOOL_PROPERTIES_FILE, propertiesFileText.getText());
+        getPreferenceStore().setValue(SCHEMATOOL_INPUT_FILE_EXTENSIONS, getFileExtensions().trim());
+        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_DRIVERNAME, connectionDriverText.getText().trim());
+        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_DRIVERJAR, driverJarText.getText().trim());
+        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_URL, connectionUrlText.getText().trim());
+        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_USERNAME, connectionUsernameText.getText().trim());
+        getPreferenceStore().setValue(SCHEMATOOL_DATASTORE_PASSWORD, connectionPasswordText.getText().trim());
+        getPreferenceStore().setValue(SCHEMATOOL_PROPERTIES_FILE, propertiesFileText.getText().trim());
         getPreferenceStore().setValue(SCHEMATOOL_VERBOSE_MODE, verboseModeCheckButton.getSelection());
-        getPreferenceStore().setValue(SCHEMATOOL_PERSISTENCE_UNIT, persistenceUnitText.getText());
+        getPreferenceStore().setValue(SCHEMATOOL_PERSISTENCE_UNIT, persistenceUnitText.getText().trim());
         getPreferenceStore().setValue(SCHEMATOOL_DDL_OUTPUT, ddlOutputCheckButton.getSelection());
-        getPreferenceStore().setValue(SCHEMATOOL_DDL_FILENAME, ddlFileNameText.getText());
-        getPreferenceStore().setValue(SCHEMATOOL_VM_ARGS, vmArgsText.getText());
+        getPreferenceStore().setValue(SCHEMATOOL_DDL_FILENAME, ddlFileNameText.getText().trim());
+        getPreferenceStore().setValue(SCHEMATOOL_VM_ARGS, vmArgsText.getText().trim());
 
         return super.performOk();
     }
