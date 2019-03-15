@@ -20,6 +20,7 @@ package org.datanucleus.ide.eclipse.jobs;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.datanucleus.ide.eclipse.preferences.GeneralPreferencePage;
@@ -154,6 +155,13 @@ public class SchemaToolCreateJob extends WorkspaceJob
             args.append(" -v ");
         }
 
+        // Properties file
+        String propertiesFilename = ProjectHelper.getStringPreferenceValue(resource, SchemaToolPreferencePage.PAGE_ID, PreferenceConstants.SCHEMATOOL_PROPERTIES_FILE);
+        if (propertiesFilename != null && propertiesFilename.trim().length() > 0)
+        {
+            args.append(" -props \"").append(propertiesFilename).append("\"");
+        }
+
         // PersistenceUnit
         boolean usingPersistenceUnit = false;
         String persistenceUnit = ProjectHelper.getStringPreferenceValue(resource, SchemaToolPreferencePage.PAGE_ID, PreferenceConstants.SCHEMATOOL_PERSISTENCE_UNIT);
@@ -161,6 +169,19 @@ public class SchemaToolCreateJob extends WorkspaceJob
         {
             usingPersistenceUnit = true;
             args.append(" -pu ").append(persistenceUnit.trim());
+        }
+
+        // Input files (jdo/class)
+        if (!usingPersistenceUnit)
+        {
+            List argsList = new ArrayList();
+            String fileSuffix = ProjectHelper.getStringPreferenceValue(resource, SchemaToolPreferencePage.PAGE_ID, PreferenceConstants.SCHEMATOOL_INPUT_FILE_EXTENSIONS);
+            String[] fileSuffixes = fileSuffix.split(System.getProperty("path.separator"));
+            LaunchUtilities.getInputFiles(argsList, resource, javaProject, fileSuffixes, true);
+            for (int i = 0; i < argsList.size(); i++)
+            {
+                args.append(argsList.get(i));
+            }
         }
 
         return args.toString();
