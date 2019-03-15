@@ -20,11 +20,11 @@ package org.datanucleus.ide.eclipse.jobs;
 import org.eclipse.jdt.core.IJavaProject;
 
 /**
- * Class that performs the SchemaTool Create process.
+ * Class that performs the SchemaTool Validate process.
  */
-public class SchemaToolCreateJob extends AbstractSchemaToolJob
+public class SchemaToolValidateJob extends AbstractSchemaToolJob
 {
-    public SchemaToolCreateJob(IJavaProject javaProject)
+    public SchemaToolValidateJob(IJavaProject javaProject)
     {
         super(javaProject);
     }
@@ -32,6 +32,6 @@ public class SchemaToolCreateJob extends AbstractSchemaToolJob
 	@Override
 	protected String getMode() 
 	{
-		return "create";
+		return "validate";
 	}
 }
