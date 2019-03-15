@@ -73,4 +73,6 @@ public interface PreferenceConstants
     String SCHEMATOOL_DDL_OUTPUT = "schematoolDdlOutput";
 
     String SCHEMATOOL_DDL_FILENAME = "schematoolDdlFilename";
+
+    String SCHEMATOOL_VM_ARGS = "schematoolVMArgs";
 }

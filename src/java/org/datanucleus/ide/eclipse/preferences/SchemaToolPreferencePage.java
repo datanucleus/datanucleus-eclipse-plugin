@@ -27,7 +27,6 @@ import java.util.jar.JarFile;
 
 import org.datanucleus.ide.eclipse.Localiser;
 import org.datanucleus.ide.eclipse.Plugin;
-import org.datanucleus.ide.eclipse.wizard.schematool.SchemaToolPropertyInputDialog;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -40,8 +39,6 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -56,9 +53,6 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IWorkbench;
@@ -115,11 +109,8 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
 
     private Button ddlFileNameBrowseButton;
 
-    /*private Table vmArgsTable;
-
-    private Button vmArgsAddButton;
-
-    private Button vmArgsRemoveButton;*/
+    /** Text widget storing any additional VM args. */
+    private Text vmArgsText;
 
     private IDialogSettings dialogSettings = Plugin.getDefault().getDialogSettings();
 
@@ -172,12 +163,12 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
         buttonGroup.setLayoutData(new GridData(GridData.FILL_BOTH, SWT.BEGINNING, false, false));
 
         fileExtensionsAddButton = new Button(buttonGroup, SWT.PUSH);
-        fileExtensionsAddButton.setText(Localiser.getString("SchemaToolPreferences.Add.Label"));
+        fileExtensionsAddButton.setText(Localiser.getString("SchemaToolPreferences.FileExtensions.Add.Label"));
         fileExtensionsAddButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         fileExtensionsAddButton.addSelectionListener(selectionListener);
 
         fileExtensionsRemoveButton = new Button(buttonGroup, SWT.PUSH);
-        fileExtensionsRemoveButton.setText(Localiser.getString("SchemaToolPreferences.Remove.Label"));
+        fileExtensionsRemoveButton.setText(Localiser.getString("SchemaToolPreferences.FileExtensions.Remove.Label"));
         fileExtensionsRemoveButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
         fileExtensionsRemoveButton.addSelectionListener(selectionListener);
 
@@ -487,97 +478,15 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
         	}
         });
 
-        // VM Arguments
-        /*Group vmArgsGroup = new Group(composite, SWT.NONE);
-        vmArgsGroup.setText(Localiser.getString("SchemaToolSettingsPanel_groupAdditionalVMArguments")); //$NON-NLS-1$
-        GridData vmArgsGridData = new GridData(SWT.FILL, SWT.NULL, true, false);
-        vmArgsGridData.horizontalSpan = 2;
-        vmArgsGroup.setLayoutData(vmArgsGridData);
+        // Additional VM args
+        Label vmArgsLabel = new Label(composite, SWT.NULL);
+        vmArgsLabel.setText(Localiser.getString("SchemaToolPreferences.VMArgs.Label"));
 
-        GridLayout vmArgsLayout = new GridLayout();
-        vmArgsLayout.marginHeight = 10;
-        vmArgsGroup.setLayout(vmArgsLayout);
-
-        vmArgsTable = new Table(vmArgsGroup, SWT.BORDER | SWT.FULL_SELECTION);
-        vmArgsTable.setHeaderVisible(true);
-        vmArgsTable.setLinesVisible(true);
-        GridData vmArgsGrid = new GridData(SWT.FILL, SWT.NULL, true, false);
-        vmArgsGrid.heightHint = 100;
-        vmArgsTable.setLayoutData(vmArgsGrid);
-        vmArgsTable.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
-                vmArgsRemoveButton.setEnabled(vmArgsTable.getSelectionCount() > 0);
-            }
-        });
-        vmArgsTable.addMouseListener(new MouseAdapter()
-        {
-            public void mouseDoubleClick(MouseEvent e)
-            {
-                int index = vmArgsTable.getSelectionIndex();
-                TableItem item = vmArgsTable.getItem(index);
-                SchemaToolPropertyInputDialog dialog = new SchemaToolPropertyInputDialog(getShell(), Localiser.getString("SchemaToolSettingsPanel_labelEditVMArguments"), item.getText(0), item.getText(1)); //$NON-NLS-1$
-                dialog.open();
-
-                if (dialog.getProperty() != null && dialog.getValue() != null)
-                {
-                    if (dialog.getProperty().length() > 0 && dialog.getValue().length() > 0)
-                    {
-                        item.setText(0, dialog.getProperty());
-                        item.setText(1, dialog.getValue());
-                    }
-                }
-            }
-        });
-
-        TableColumn propertyColumn = new TableColumn(vmArgsTable, SWT.LEFT);
-        propertyColumn.setText(Localiser.getString("SchemaToolSettingsPanel_labelProperty")); //$NON-NLS-1$
-        propertyColumn.setWidth(200);
-
-        TableColumn valueColumn = new TableColumn(vmArgsTable, SWT.LEFT);
-        valueColumn.setText(Localiser.getString("SchemaToolSettingsPanel_labelValue")); //$NON-NLS-1$
-        valueColumn.setWidth(100);
-
-        Composite buttonComposite = new Composite(vmArgsGroup, SWT.NULL);
-        buttonComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-        GridLayout buttonCompositeLayout = new GridLayout();
-        buttonComposite.setLayout(buttonCompositeLayout);
-
-        vmArgsAddButton = new Button(buttonComposite, SWT.PUSH);
-        vmArgsAddButton.setText(Localiser.getString("SchemaToolSettingsPanel_labelAdd")); //$NON-NLS-1$
-        vmArgsAddButton.setLayoutData(new GridData(SWT.FILL, SWT.NULL, true, false));
-        vmArgsAddButton.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
-                SchemaToolPropertyInputDialog dialog = new SchemaToolPropertyInputDialog(getShell(), Localiser.getString("SchemaToolSettingsPanel_labelNewVMArgument"), null, null); //$NON-NLS-1$
-                dialog.open();
-
-                if (dialog.getProperty() != null && dialog.getValue() != null)
-                {
-                    TableItem item = new TableItem(vmArgsTable, SWT.NONE, vmArgsTable.getItemCount());
-                    if (dialog.getProperty().length() > 0 && dialog.getValue().length() > 0)
-                    {
-                        item.setText(0, dialog.getProperty());
-                        item.setText(1, dialog.getValue());
-                    }
-                }
-            }
-        });
-
-        vmArgsRemoveButton = new Button(buttonComposite, SWT.PUSH);
-        vmArgsRemoveButton.setText(Localiser.getString("SchemaToolSettingsPanel_labelRemove")); //$NON-NLS-1$
-        vmArgsRemoveButton.setLayoutData(new GridData(SWT.FILL, SWT.NULL, true, false));
-        vmArgsRemoveButton.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
-            	vmArgsTable.remove(vmArgsTable.getSelectionIndex());
-            }
-        });
-        vmArgsRemoveButton.setEnabled(vmArgsTable.getSelectionCount() > 0);*/
+        vmArgsText = new Text(composite, SWT.BORDER | SWT.SINGLE);
+        GridData vmArgsGrid = new GridData(SWT.FILL, SWT.NULL, false, false);
+        vmArgsGrid.widthHint = 50;
+        vmArgsText.setLayoutData(vmArgsGrid);
+        vmArgsText.setToolTipText(Localiser.getString("SchemaToolPreferences.VMArgs.Tooltip"));
 
         // Initialise all widgets with initial values
         initControls();
@@ -706,7 +615,7 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
         ddlFileNameText.setText(getPreferenceStore().getString(SCHEMATOOL_DDL_FILENAME));
         ddlFileNameText.setEnabled(getPreferenceStore().getBoolean(SCHEMATOOL_DDL_OUTPUT));
 
-        // TODO Add vmArgs
+        vmArgsText.setText(getPreferenceStore().getString(SCHEMATOOL_VM_ARGS));
     }
 
     /*
@@ -726,6 +635,7 @@ public class SchemaToolPreferencePage extends PropertyAndPreferencePage implemen
         getPreferenceStore().setValue(SCHEMATOOL_PERSISTENCE_UNIT, persistenceUnitText.getText());
         getPreferenceStore().setValue(SCHEMATOOL_DDL_OUTPUT, ddlOutputCheckButton.getSelection());
         getPreferenceStore().setValue(SCHEMATOOL_DDL_FILENAME, ddlFileNameText.getText());
+        getPreferenceStore().setValue(SCHEMATOOL_VM_ARGS, vmArgsText.getText());
 
         return super.performOk();
     }

@@ -63,8 +63,7 @@ public class EnhancerJob extends WorkspaceJob
         String vmArgs = LaunchUtilities.getDefaultVMArguments(javaProject.getProject());
         String workingDir = null; //LaunchUtilities.getWorkingDir(javaProject);
         String programArgs = getProgramArguments(javaProject.getProject(), javaProject);
-        boolean captureOutput = ProjectHelper.getBooleanPreferenceValue(javaProject.getProject(), EnhancerPreferencePage.PAGE_ID,
-                PreferenceConstants.ENHANCER_CAPTURE_OUTPUT);
+        boolean captureOutput = ProjectHelper.getBooleanPreferenceValue(javaProject.getProject(), EnhancerPreferencePage.PAGE_ID, PreferenceConstants.ENHANCER_CAPTURE_OUTPUT);
         LaunchUtilities.launch(javaProject, NAME, MAINCLASS, classpath, vmArgs, workingDir, programArgs, MAINCLASS, captureOutput);
         refreshProjectResources();
         return Status.OK_STATUS;
@@ -80,18 +79,15 @@ public class EnhancerJob extends WorkspaceJob
         StringBuilder args = new StringBuilder();
 
         // API
-        String apiName = ProjectHelper.getStringPreferenceValue(resource, GeneralPreferencePage.PAGE_ID,
-            PreferenceConstants.PERSISTENCE_API);
+        String apiName = ProjectHelper.getStringPreferenceValue(resource, GeneralPreferencePage.PAGE_ID, PreferenceConstants.PERSISTENCE_API);
         if (apiName != null && apiName.trim().length() > 0)
         {
             args.append(" -api ").append(apiName.trim());
         }
 
         // verbose
-        boolean verboseMode = ProjectHelper.getBooleanPreferenceValue(resource, EnhancerPreferencePage.PAGE_ID,
-            PreferenceConstants.ENHANCER_VERBOSE_MODE);
-        boolean captureOutput = ProjectHelper.getBooleanPreferenceValue(javaProject.getProject(), EnhancerPreferencePage.PAGE_ID,
-                PreferenceConstants.ENHANCER_CAPTURE_OUTPUT);
+        boolean verboseMode = ProjectHelper.getBooleanPreferenceValue(resource, EnhancerPreferencePage.PAGE_ID, PreferenceConstants.ENHANCER_VERBOSE_MODE);
+        boolean captureOutput = ProjectHelper.getBooleanPreferenceValue(javaProject.getProject(), EnhancerPreferencePage.PAGE_ID, PreferenceConstants.ENHANCER_CAPTURE_OUTPUT);
         if (captureOutput && verboseMode)
         {
             args.append(" -v ");
@@ -99,8 +95,7 @@ public class EnhancerJob extends WorkspaceJob
 
         // PersistenceUnit
         boolean usingPersistenceUnit = false;
-        String persistenceUnit = ProjectHelper.getStringPreferenceValue(resource, EnhancerPreferencePage.PAGE_ID,
-            PreferenceConstants.ENHANCER_PERSISTENCE_UNIT);
+        String persistenceUnit = ProjectHelper.getStringPreferenceValue(resource, EnhancerPreferencePage.PAGE_ID, PreferenceConstants.ENHANCER_PERSISTENCE_UNIT);
         if (persistenceUnit != null && persistenceUnit.trim().length() > 0)
         {
             usingPersistenceUnit = true;
@@ -109,12 +104,15 @@ public class EnhancerJob extends WorkspaceJob
 
         // Input files (jdo/class)
         if (!usingPersistenceUnit)
+        {
             appendInputFiles(args, resource, javaProject);
+        }
 
         return args.toString();
     }
 
-    private static void appendInputFiles(StringBuilder args, IResource resource, IJavaProject javaProject) {
+    private static void appendInputFiles(StringBuilder args, IResource resource, IJavaProject javaProject) 
+    {
         final boolean useFileListFile = ProjectHelper.getBooleanPreferenceValue(resource, EnhancerPreferencePage.PAGE_ID,
                 PreferenceConstants.ENHANCER_USE_FILE_LIST_FILE,
                 PreferenceConstants.ENHANCER_USE_FILE_LIST_FILE_DEFAULT_VALUE);
@@ -126,11 +124,13 @@ public class EnhancerJob extends WorkspaceJob
         final List<String> inputFiles = new ArrayList<String>();
         LaunchUtilities.getInputFiles(inputFiles, resource, javaProject, fileSuffixes, !useFileListFile);
 
-        if (useFileListFile) {
+        if (useFileListFile)
+        {
             File fileListFile = writeFileListFile(inputFiles);
             args.append(" -flf \"").append(fileListFile.getAbsolutePath()).append('"');
         }
-        else {
+        else 
+        {
             for (int i = 0; i < inputFiles.size(); i++)
             {
                 args.append(inputFiles.get(i));
@@ -140,31 +140,40 @@ public class EnhancerJob extends WorkspaceJob
 
     /**
      * Writes the given {@code files} into a temporary file. The file is deleted by the enhancer.
-     *
      * @param files the list of files to be written into the file (UTF-8-encoded). Must not be <code>null</code>.
      * @return the temporary file.
      */
-    private static File writeFileListFile(Collection<String> files) {
-        try {
+    private static File writeFileListFile(Collection<String> files) 
+    {
+        try 
+        {
             File fileListFile = File.createTempFile("enhancer-", ".flf");
             FileOutputStream out = new FileOutputStream(fileListFile);
-            try {
+            try
+            {
                 OutputStreamWriter w = new OutputStreamWriter(out, "UTF-8");
-                try {
-                    for (String file : files) {
+                try
+                {
+                    for (String file : files)
+                    {
                         w.write(file);
-                        // The enhancer uses a BufferedReader, which accepts all types of line feeds (CR, LF, CRLF).
-                        // Therefore a single \n is fine.
+                        // The enhancer uses a BufferedReader, which accepts all types of line feeds (CR, LF, CRLF). Therefore a single \n is fine.
                         w.write('\n');
                     }
-                } finally {
+                }
+                finally
+                {
                     w.close();
                 }
-            } finally {
+            }
+            finally
+            {
                 out.close();
             }
             return fileListFile;
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             throw new RuntimeException(e);
         }
     }
