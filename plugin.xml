@@ -72,18 +72,23 @@
             <visibility>
                 <objectState name="nature" value="org.datanucleus.ide.eclipse.projectnature"/>
             </visibility>
-            <!--action label="Create persistence.xml for project" id="datanucleus-eclipse.contribution.project.actions.persistencexml"
-               class="org.datanucleus.ide.eclipse.popup.actions.CreatePersistenceXmlAction" menubarPath="datanucleus-eclipse.contribution.project.menu/tools"/-->
             <action label="%actionAutoEnhancement" id="datanucleus-eclipse.contribution.project.actions.autoenhancement"
                class="org.datanucleus.ide.eclipse.popup.actions.AutoEnhancementAction" menubarPath="datanucleus-eclipse.contribution.project.menu/enhancer" style="toggle"/>
-            <action label="%actionSchemaTool" id="datanucleus-eclipse.contribution.project.actions.schematool"
-               class="org.datanucleus.ide.eclipse.popup.actions.SchemaToolAction" menubarPath="datanucleus-eclipse.contribution.project.menu/tools"/>
+
+            <action label="%actionSchemaToolWizard" id="datanucleus-eclipse.contribution.project.actions.schematool-wizard"
+               class="org.datanucleus.ide.eclipse.popup.actions.SchemaToolWizardAction" menubarPath="datanucleus-eclipse.contribution.project.menu/tools"/>
+
+            <action label="%actionSchemaToolDbinfo" id="datanucleus-eclipse.contribution.project.actions.schematool-dbinfo"
+               class="org.datanucleus.ide.eclipse.popup.actions.SchemaToolDbinfoAction" menubarPath="datanucleus-eclipse.contribution.project.menu/tools"/>
+            <action label="%actionSchemaToolSchemainfo" id="datanucleus-eclipse.contribution.project.actions.schematool-schemainfo"
+               class="org.datanucleus.ide.eclipse.popup.actions.SchemaToolSchemainfoAction" menubarPath="datanucleus-eclipse.contribution.project.menu/tools"/>
             <action label="%actionSchemaToolDelete" id="datanucleus-eclipse.contribution.project.actions.schematool-delete"
                class="org.datanucleus.ide.eclipse.popup.actions.SchemaToolDeleteAction" menubarPath="datanucleus-eclipse.contribution.project.menu/tools"/>
             <action label="%actionSchemaToolValidate" id="datanucleus-eclipse.contribution.project.actions.schematool-validate"
                class="org.datanucleus.ide.eclipse.popup.actions.SchemaToolValidateAction" menubarPath="datanucleus-eclipse.contribution.project.menu/tools"/>
             <action label="%actionSchemaToolCreate" id="datanucleus-eclipse.contribution.project.actions.schematool-create"
                class="org.datanucleus.ide.eclipse.popup.actions.SchemaToolCreateAction" menubarPath="datanucleus-eclipse.contribution.project.menu/tools"/>
+
             <action label="%actionEnhancerTool" id="datanucleus-eclipse.contribution.project.actions.enhancertool"
                class="org.datanucleus.ide.eclipse.popup.actions.EnhancerToolAction" menubarPath="datanucleus-eclipse.contribution.project.menu/tools"/>
         </objectContribution>

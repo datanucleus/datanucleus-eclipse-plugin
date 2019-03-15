@@ -31,7 +31,7 @@ import org.eclipse.ui.IActionDelegate;
 /**
  * Action invoked when the user selects the popup menu option "SchemaTool" from a Java project.
  */
-public class SchemaToolAction extends JavaProjectAction
+public class SchemaToolWizardAction extends JavaProjectAction
 {
     /**
      * @see IActionDelegate#run(IAction)
