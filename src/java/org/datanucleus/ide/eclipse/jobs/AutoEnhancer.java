@@ -119,8 +119,8 @@ public class AutoEnhancer extends IncrementalProjectBuilder
         final String[] fileSuffixes = fileSuffix.split(System.getProperty("path.separator"));
         
         final Set<String> relevantFileSuffixes = Stream.of(fileSuffixes).collect(Collectors.toSet());
-        relevantFileSuffixes.remove("class");
-        relevantFileSuffixes.add("java");
+        relevantFileSuffixes.remove("java");
+        relevantFileSuffixes.add("class");
         
         return resource -> {
             if (resource.getType() == IResource.FILE) {
