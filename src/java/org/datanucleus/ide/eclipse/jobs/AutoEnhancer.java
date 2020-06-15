@@ -19,9 +19,12 @@ Contributors:
 package org.datanucleus.ide.eclipse.jobs;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -72,8 +75,32 @@ public class AutoEnhancer extends IncrementalProjectBuilder
         job.schedule();
     }
 
-    protected void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) throws CoreException
+    protected void incrementalBuild(IResourceDelta resourceDelta, IProgressMonitor monitor) throws CoreException
     {
+        
+        final AtomicBoolean hasAnyJavaOrJdoFileBeenChanged = new AtomicBoolean(false);
+        
+        resourceDelta.accept(new IResourceDeltaVisitor() {
+            
+            @Override
+            public boolean visit(IResourceDelta delta) throws CoreException {
+                
+                final IResource resource = delta.getResource();
+                if (resource.getType() == IResource.FILE) {
+                    if("java".equals(resource.getFileExtension())
+                            || "jdo".equals(resource.getFileExtension())) {
+                        hasAnyJavaOrJdoFileBeenChanged.set(true);
+                        return false; // stop searching
+                    }
+                }
+                return true; // continue searching
+            }
+        });
+        
+        if(!hasAnyJavaOrJdoFileBeenChanged.get()) {
+            return; // don't trigger build
+        }
+        
         // the visitor does the work.
         // delta.accept(new MyBuildDeltaVisitor());
         // TODO do incremental build
