@@ -19,9 +19,19 @@ Contributors:
 package org.datanucleus.ide.eclipse.jobs;
 
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.datanucleus.ide.eclipse.preferences.EnhancerPreferencePage;
+import org.datanucleus.ide.eclipse.preferences.PreferenceConstants;
+import org.datanucleus.ide.eclipse.project.ProjectHelper;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -32,7 +42,7 @@ import org.eclipse.jdt.core.JavaCore;
 /**
  * Class providing auto-enhancement of classes, linking in to the building process.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AutoEnhancer extends IncrementalProjectBuilder
 {
@@ -72,11 +82,57 @@ public class AutoEnhancer extends IncrementalProjectBuilder
         job.schedule();
     }
 
-    protected void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) throws CoreException
+    protected void incrementalBuild(IResourceDelta resourceDelta, IProgressMonitor monitor) throws CoreException
     {
+        
+        final AtomicBoolean hasAnyRelevantFileBeenChanged = new AtomicBoolean(false);
+        final Predicate<IResource> resourceFilter = 
+                createResourceFilterForRelevantResourceChanges(resourceDelta.getResource());
+        
+        resourceDelta.accept(new IResourceDeltaVisitor() {
+            
+            @Override
+            public boolean visit(IResourceDelta delta) throws CoreException {
+                
+                if(resourceFilter.test(delta.getResource())) {
+                    hasAnyRelevantFileBeenChanged.set(true);
+                    return false; // stop searching
+                }
+                return true; // continue searching
+            }
+        });
+        
+        if(!hasAnyRelevantFileBeenChanged.get()) {
+            return; // don't trigger build
+        }
+        
         // the visitor does the work.
         // delta.accept(new MyBuildDeltaVisitor());
         // TODO do incremental build
         fullBuild(monitor);
     }
+    
+    private static Predicate<IResource> createResourceFilterForRelevantResourceChanges(IResource projectHolder) {
+        
+        final String fileSuffix = ProjectHelper.getStringPreferenceValue(projectHolder,
+                EnhancerPreferencePage.PAGE_ID, PreferenceConstants.ENHANCER_INPUT_FILE_EXTENSIONS);
+        final String[] fileSuffixes = fileSuffix.split(System.getProperty("path.separator"));
+        
+        final Set<String> relevantFileSuffixes = Stream.of(fileSuffixes).collect(Collectors.toSet());
+        relevantFileSuffixes.remove("class");
+        relevantFileSuffixes.add("java");
+        
+        return resource -> {
+            if (resource.getType() == IResource.FILE) {
+                if(relevantFileSuffixes.contains(resource.getFileExtension())) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        
+        
+    }
+    
+    
 }
