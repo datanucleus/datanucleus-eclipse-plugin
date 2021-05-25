@@ -2,7 +2,7 @@
 <feature
       id="org.datanucleus.ide.eclipse.feature"
       label="DataNucleus Eclipse Plugins"
-      version="5.0.0"
+      version="6.0.0"
       provider-name="DataNucleus">
 
    <description url="http://www.datanucleus.org/guides/eclipse/index.html">
@@ -10,7 +10,7 @@
    </description>
 
    <copyright>
-      Copyright (c) 2008-2008 DataNucleus
+      Copyright (c) 2008-2021 DataNucleus
 All rights reserved.
    </copyright>
 
@@ -215,6 +215,6 @@ All rights reserved.
          id="org.datanucleus.ide.eclipse"
          download-size="0"
          install-size="0"
-         version="1.0.0.m1"/>
+         version="6.0.0"/>
 
 </feature>

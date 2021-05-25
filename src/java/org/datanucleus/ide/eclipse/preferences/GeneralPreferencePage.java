@@ -101,7 +101,7 @@ public class GeneralPreferencePage extends PropertyAndPreferencePage implements 
         apiLabel.setText(Localiser.getString("GeneralPreferences.API.Label"));
 
         apiCombo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
-        apiCombo.setItems(new String[] {"JDO", "JPA"});
+        apiCombo.setItems(new String[] {"JDO", "JPA", "Jakarta"});
         GridData apiGrid = new GridData(SWT.FILL, SWT.NULL, false, false);
         apiCombo.setLayoutData(apiGrid);
         apiCombo.setToolTipText(Localiser.getString("GeneralPreferences.API.Tooltip"));
