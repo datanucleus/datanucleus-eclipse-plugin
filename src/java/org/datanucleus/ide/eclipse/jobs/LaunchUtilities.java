@@ -174,7 +174,7 @@ public class LaunchUtilities implements IJavaLaunchConfigurationConstants
             PreferenceConstants.LOGGING_CONFIGURATION_FILE);
         if (logFileURL != null && logFileURL.trim().length() > 0)
         {
-            // Specify the log4j config if present
+            // Specify the log4j v1 config if present
             args.append(" -Dlog4j.configuration=file:\"").append(logFileURL).append("\" ");
         }
 
